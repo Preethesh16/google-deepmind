@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Orbit | The Operating System for Autonomous Founders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed">
+
+<!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center gap-4">
+    <div class="flex items-center gap-stack-lg">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-lg">orbit</span>
+        </span>
+        <span class="font-extrabold text-xl tracking-tight">Orbit</span>
+      </a>
+      <div class="hidden md:flex gap-stack-lg">
+        <a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#agents" data-i18n="nav.agents">Agents</a>
+        <a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="workflow.html" data-i18n="nav.workflow">Workflow</a>
+        <a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="/?view=onboarding" data-i18n="nav.onboarding">Onboarding</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="lang-selector" class="hidden sm:flex"></div>
+      <a href="/?view=onboarding" class="bg-primary text-on-primary px-6 py-2.5 rounded-full text-label-sm font-bold active:scale-95 transition-all shadow-lg shadow-primary/20" data-i18n="nav.getStarted">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="pt-40 pb-20 px-margin-mobile md:px-margin-desktop text-center">
+  <div class="max-w-4xl mx-auto space-y-stack-lg">
+    <span class="inline-block px-4 py-1.5 bg-surface-container-low text-primary font-medium text-label-sm rounded-full border border-outline-variant/30" data-i18n="hero.badge">
+      Built for first-time founders and MSMEs across India
+    </span>
+    <h1 class="text-headline-lg-mobile md:text-display-lg font-bold tracking-tight">
+      <span data-i18n="hero.title.pre">The Operating System for </span><span class="text-primary" data-i18n="hero.title.accent">Autonomous Founders</span>
+    </h1>
+    <p class="text-body-lg text-on-surface-variant max-w-2xl mx-auto" data-i18n="hero.subtitle">
+      An AI agent team that replaces 6 full-time hires. From legal compliance to multilingual marketing, your business works in your language while you sleep.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+      <a href="/?view=onboarding" class="w-full sm:w-auto bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/25 hover:brightness-110 transition-all" data-i18n="hero.cta.primary">Get Started</a>
+      <a href="workflow.html" class="w-full sm:w-auto bg-white border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-body-md hover:bg-surface-container-low transition-all" data-i18n="hero.cta.secondary">See How It Works</a>
+    </div>
+    <a class="inline-flex items-center gap-2 text-primary font-semibold hover:underline group" href="workflow.html">
+      <span data-i18n="hero.demo">Introducing Orbit — Watch demo</span>
+      <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+    </a>
+  </div>
+</section>
+
+<!-- Hero Product Mockup -->
+<section class="pb-section-padding px-margin-mobile md:px-margin-desktop">
+  <div class="max-w-container-max mx-auto bg-[#111111] rounded-xl overflow-hidden shadow-2xl relative">
+    <div class="flex items-center gap-2 px-4 py-3 bg-[#1A1A1A] border-b border-white/5">
+      <div class="flex gap-1.5">
+        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+      </div>
+      <div class="mx-auto text-white/40 text-xs font-mono">orbit.os / dashboard</div>
+    </div>
+    <div class="grid grid-cols-12 min-h-[600px]">
+      <!-- Sidebar: live agent feed -->
+      <div class="col-span-3 border-r border-white/5 p-6 space-y-8 hidden md:block">
+        <div class="space-y-4">
+          <p class="text-white/40 text-[10px] uppercase tracking-widest font-bold">Live Agent Feed</p>
+          <div class="space-y-3">
+            <div class="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p class="text-primary-fixed-dim text-xs font-bold mb-1">Legal Agent</p>
+              <p class="text-white/80 text-[11px]">GST status verified. Quarterly filing scheduled.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p class="text-tertiary-fixed text-xs font-bold mb-1">Brand Agent</p>
+              <p class="text-white/80 text-[11px]">Tamil landing copy drafted for Pongal campaign.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p class="text-white/60 text-xs font-bold mb-1">Conflict Resolution</p>
+              <p class="text-white/80 text-[11px]">"Certified organic" claim held — FSSAI pending.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-white/5 border border-white/10 opacity-50">
+              <p class="text-white/40 text-xs font-bold mb-1">Support Agent</p>
+              <p class="text-white/40 text-[11px]">Monitoring customer tickets (4 unresolved)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Main display -->
+      <div class="col-span-12 md:col-span-9 p-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-white/40 text-xs">Agents Active</p>
+            <p class="text-white text-2xl font-bold">8</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-white/40 text-xs">Tasks Completed</p>
+            <p class="text-white text-2xl font-bold">128</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-white/40 text-xs">Docs Ingested</p>
+            <p class="text-white text-2xl font-bold">12</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-white/40 text-xs">Languages</p>
+            <p class="text-white text-2xl font-bold">3</p>
+          </div>
+        </div>
+        <div class="relative rounded-xl overflow-hidden aspect-video bg-gradient-to-br from-white/5 to-white/0 border border-white/10 p-1">
+          <div class="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
+            <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-primary-fixed-dim text-3xl">rocket_launch</span>
+            </div>
+            <h3 class="text-white text-xl font-bold mb-2">Automating Ops Core</h3>
+            <div class="w-64 h-2 bg-white/10 rounded-full overflow-hidden mb-2">
+              <div class="w-[94.5%] h-full bg-primary"></div>
+            </div>
+            <span class="px-3 py-1 bg-primary/20 text-primary-fixed-dim text-[10px] font-bold rounded-full uppercase tracking-widest">94.5% Roadmap Complete</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Multilingual showcase -->
+<section class="py-section-padding px-margin-mobile md:px-margin-desktop">
+  <div class="max-w-container-max mx-auto bg-surface-container-low rounded-xl p-8 md:p-16">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="space-y-stack-lg">
+        <h2 class="text-headline-lg-mobile md:text-headline-xl font-bold">
+          <span data-i18n="multilingual.title.pre">Businesses that feel handcrafted, </span><span class="text-primary" data-i18n="multilingual.title.accent">run like a team</span>
+        </h2>
+        <p class="text-body-lg text-on-surface-variant" data-i18n="multilingual.body">
+          Orbit doesn't just translate; it transcreates. Whether it's drafting your partnership deed or writing a WhatsApp campaign in Hindi, Orbit understands the local context of Indian business.
+        </p>
+        <!-- Live language toggle: actually switches page language -->
+        <div class="flex items-center gap-4 bg-white p-2 rounded-full border border-outline-variant w-fit">
+          <button onclick="I18N.apply('en')" class="px-4 py-1.5 rounded-full text-label-sm font-bold hover:bg-surface-container">English</button>
+          <button onclick="I18N.apply('ta')" class="px-4 py-1.5 rounded-full text-label-sm font-medium hover:bg-surface-container">தமிழ்</button>
+          <button onclick="I18N.apply('hi')" class="px-4 py-1.5 rounded-full text-label-sm font-medium hover:bg-surface-container">हिन्दी</button>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="bg-white rounded-xl shadow-2xl p-6 border border-outline-variant/30 space-y-4">
+          <div class="flex items-center justify-between">
+            <p class="font-bold text-body-md">Founder dashboard</p>
+            <span class="text-xs text-on-surface-variant">One content model, three locales</span>
+          </div>
+          <div class="space-y-3">
+            <div class="p-4 rounded-lg bg-surface border border-outline-variant/30">
+              <p class="text-xs font-bold text-primary mb-1">EN</p>
+              <p class="text-sm">Fresh organic spices, delivered monthly.</p>
+            </div>
+            <div class="p-4 rounded-lg bg-surface border border-outline-variant/30">
+              <p class="text-xs font-bold text-primary mb-1">TA</p>
+              <p class="text-sm">புத்தம் புதிய இயற்கை மசாலா, மாதந்தோறும் உங்கள் வீட்டுக்கு.</p>
+            </div>
+            <div class="p-4 rounded-lg bg-surface border border-outline-variant/30">
+              <p class="text-xs font-bold text-primary mb-1">HI</p>
+              <p class="text-sm">ताज़े ऑर्गेनिक मसाले, हर महीने आपके घर।</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Agents grid -->
+<section id="agents" class="py-section-padding px-margin-mobile md:px-margin-desktop bg-white">
+  <div class="max-w-container-max mx-auto">
+    <div class="grid md:grid-cols-3 gap-gutter">
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">search_insights</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.research.title">Research Agent</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.research.body">Validates your idea against real-world market data and identifies your niche competitors in seconds.</p>
+      </div>
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">gavel</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.legal.title">Legal &amp; Compliance</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.legal.body">Tracks registrations, drafts customized legal agreements, and manages your GST filings autonomously.</p>
+      </div>
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">campaign</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.brand.title">Brand &amp; Marketing</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.brand.body">Develops brand positioning and creates high-converting multilingual copy for ads and socials.</p>
+      </div>
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">developer_mode_tv</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.build.title">Build Agent + Gemma</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.build.body">Powered by Gemma Antigravity. Generates live, editable websites in plain language via on-device LLMs.</p>
+      </div>
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">trending_up</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.sales.title">Sales/GTM Agent</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.sales.body">Outbound scripts, CRM management, and dynamic pricing strategies tailored to your customer's context.</p>
+      </div>
+      <div class="p-8 rounded-xl bg-surface transition-all hover:shadow-xl hover:-translate-y-1 group">
+        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <span class="material-symbols-outlined">support_agent</span>
+        </div>
+        <h3 class="text-headline-lg font-semibold mb-4" data-i18n="agents.support.title">Support Agent</h3>
+        <p class="text-on-surface-variant text-body-md" data-i18n="agents.support.body">First-layer customer support grounded in your company's specific knowledge base and past tickets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Document ingestion -->
+<section class="py-section-padding px-margin-mobile md:px-margin-desktop overflow-hidden">
+  <div class="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-center">
+    <div class="order-2 md:order-1 relative">
+      <div class="bg-white rounded-xl shadow-2xl p-8 border border-outline-variant/30 space-y-6">
+        <div class="flex items-center justify-between">
+          <h4 class="text-body-lg font-bold">Onboarding Documents</h4>
+          <span class="text-xs text-on-surface-variant">Secure Upload</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="p-4 border-2 border-dashed border-outline-variant/50 rounded-lg flex flex-col items-center text-center gap-2 hover:border-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-primary-fixed-dim">description</span>
+            <span class="text-label-sm">ITR Form</span>
+          </div>
+          <div class="p-4 border-2 border-dashed border-outline-variant/50 rounded-lg flex flex-col items-center text-center gap-2 hover:border-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-primary-fixed-dim">receipt_long</span>
+            <span class="text-label-sm">GST Portal</span>
+          </div>
+          <div class="p-4 border-2 border-dashed border-outline-variant/50 rounded-lg flex flex-col items-center text-center gap-2 hover:border-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-primary-fixed-dim">account_balance</span>
+            <span class="text-label-sm">Bank Statement</span>
+          </div>
+          <div class="p-4 border-2 border-dashed border-outline-variant/50 rounded-lg flex flex-col items-center text-center gap-2 hover:border-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-primary-fixed-dim">badge</span>
+            <span class="text-label-sm">PAN / Aadhaar</span>
+          </div>
+        </div>
+        <div class="bg-green-50 text-green-700 p-4 rounded-lg flex items-center gap-3">
+          <span class="material-symbols-outlined text-green-600">verified_user</span>
+          <p class="text-label-sm font-medium" data-i18n="ingest.verified">Financial profile extracted — 100% on-device</p>
+        </div>
+      </div>
+    </div>
+    <div class="order-1 md:order-2 space-y-stack-lg">
+      <h2 class="text-headline-lg-mobile md:text-headline-xl font-bold">
+        <span data-i18n="ingest.title.pre">Not starting from zero?</span><br>
+        <span class="text-primary" data-i18n="ingest.title.accent">Neither is Orbit.</span>
+      </h2>
+      <p class="text-body-lg text-on-surface-variant" data-i18n="ingest.body">
+        Connect your legacy documents and Orbit's on-device LLM, Gemma, will securely index your entire history. Privacy isn't a feature; it's our core architecture.
+      </p>
+      <a href="/?view=onboarding" class="inline-block bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md active:scale-95 transition-all shadow-xl shadow-primary/20" data-i18n="hero.cta.primary">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- Continuous improvement loop -->
+<section class="py-section-padding px-margin-mobile md:px-margin-desktop bg-surface-container-low">
+  <div class="max-w-container-max mx-auto text-center space-y-16">
+    <h2 class="text-headline-lg-mobile md:text-headline-xl font-bold max-w-3xl mx-auto" data-i18n="loop.title">
+      Your business keeps improving, even when you're not building
+    </h2>
+    <div class="relative py-12">
+      <div class="hidden md:block absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 -translate-y-1/2 z-0"></div>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8 relative z-10">
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-xl">monitoring</span>
+          </div>
+          <p class="text-label-sm font-bold">Sales Agent</p>
+          <p class="text-xs text-on-surface-variant">Notices conversion drop on checkout page</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-xl">auto_fix_high</span>
+          </div>
+          <p class="text-label-sm font-bold">Antigravity</p>
+          <p class="text-xs text-on-surface-variant">Drafts 3 variation edits for the landing UI</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-xl">policy</span>
+          </div>
+          <p class="text-label-sm font-bold">Legal Agent</p>
+          <p class="text-xs text-on-surface-variant">Checks copy against consumer protection laws</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-3 ring-2 ring-primary">
+          <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-xl">fingerprint</span>
+          </div>
+          <p class="text-label-sm font-bold">Founder</p>
+          <p class="text-xs text-on-surface-variant">Reviews and approves with one-tap biometric</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-xl">cloud_done</span>
+          </div>
+          <p class="text-label-sm font-bold">Live</p>
+          <p class="text-xs text-on-surface-variant">Changes deployed globally in seconds</p>
+        </div>
+      </div>
+    </div>
+    <p class="text-body-md text-on-surface-variant max-w-2xl mx-auto" data-i18n="loop.footer">
+      Every action is logged in an immutable vault with instant rollback capabilities. You control the intent; Orbit handles the execution.
+    </p>
+  </div>
+</section>
+
+<!-- Integrations strip -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop bg-white">
+  <div class="max-w-container-max mx-auto text-center space-y-12">
+    <h2 class="text-headline-lg font-semibold">Grounded in the systems founders already deal with</h2>
+    <div class="flex flex-wrap justify-center gap-6">
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="text-label-sm font-bold">GST Portal</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span class="text-label-sm font-bold">Udyam</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span><span class="text-label-sm font-bold">PAN / KYC</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="text-label-sm font-bold">Bank Statements</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="text-label-sm font-bold">E-Invoicing</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span><span class="text-label-sm font-bold">ITR Filing</span></div>
+      <div class="flex items-center gap-2 px-6 py-3 bg-surface rounded-full border border-outline-variant/40"><span class="w-2 h-2 rounded-full bg-error"></span><span class="text-label-sm font-bold">MCA/Incorporation</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-section-padding px-margin-mobile md:px-margin-desktop">
+  <div class="max-w-4xl mx-auto text-center space-y-stack-lg p-10 md:p-16 rounded-xl bg-[#111111] text-white relative overflow-hidden">
+    <div class="relative z-10 space-y-6">
+      <h2 class="text-headline-lg-mobile md:text-headline-xl font-bold leading-tight" data-i18n="cta.title">Your company that runs itself, starting today.</h2>
+      <p class="text-body-lg text-white/70 max-w-lg mx-auto" data-i18n="cta.body">
+        Join the waitlist for early founder access. Average onboarding takes 4 minutes once your docs are verified.
+      </p>
+      <div class="pt-8">
+        <a href="/?view=onboarding" class="inline-block bg-primary text-white px-10 py-5 rounded-full font-bold text-body-lg shadow-2xl shadow-primary/40 hover:scale-105 transition-transform" data-i18n="hero.cta.primary">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-surface-container w-full py-24 border-t border-outline-variant">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter">
+    <div class="space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-lg">orbit</span>
+        </span>
+        <span class="font-extrabold text-xl tracking-tight">Orbit</span>
+      </div>
+      <p class="text-body-md text-on-surface-variant" data-i18n="footer.tagline">The Operating System for AI-first Founders. Built in Bengaluru for the world.</p>
+    </div>
+    <div>
+      <h4 class="font-bold mb-6" data-i18n="nav.product">Product</h4>
+      <ul class="space-y-4">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#agents" data-i18n="nav.agents">Agents</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="workflow.html" data-i18n="nav.workflow">Workflow</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/?view=onboarding" data-i18n="nav.onboarding">Onboarding</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-6">Resources</h4>
+      <ul class="space-y-4">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Founder Guide</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-6">Connect</h4>
+      <div class="flex gap-4">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Twitter</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">LinkedIn</a>
+      </div>
+      <div class="mt-12">
+        <p class="text-label-sm text-on-surface-variant">© 2026 Orbit. All rights reserved.</p>
+        <div class="mt-2 space-x-4">
+          <a class="text-label-sm text-on-surface-variant hover:underline" href="#">Privacy Policy</a>
+          <a class="text-label-sm text-on-surface-variant hover:underline" href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/i18n.js"></script>
+</body>
+</html>

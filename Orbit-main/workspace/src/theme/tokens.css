@@ -1,0 +1,144 @@
+/*
+ * Orbit workspace — design tokens (single source of truth).
+ * Tailwind config maps utility classes onto these variables; components
+ * reference tokens (via Tailwind classes or var()) — never hardcoded hex.
+ * Pure CSS on purpose: this file must not depend on Tailwind processing.
+ */
+:root {
+  /* ---- Color ----
+     Values aligned with Preethesh's landing palette (landing/assets/theme.js)
+     so landing and workspace read as one product. */
+  --color-background: #fff8f6;      /* warm white app background (landing `surface`) */
+  --color-surface: #ffffff;         /* cards, panels, elevated content */
+  --color-dark-surface: #111111;    /* dark UI sections, mockup frames, footer */
+  --color-primary: #a53600;         /* deep burnt orange (landing `primary`) */
+  --color-primary-hover: #812800;   /* pressed/hover primary */
+  --color-primary-soft: rgba(165, 54, 0, 0.08); /* icon chips, active-nav tint */
+  --color-text-primary: #261814;    /* warm near-black (landing `on-surface`) */
+  --color-text-secondary: #625e59;  /* muted text, labels (landing `secondary`) */
+  --color-text-inverse: #ffffff;    /* text on dark backgrounds */
+  --color-border: #f2e0d8;          /* warm dividers (landing outline-variant @ ~35%) */
+  --color-success: #2fa36b;         /* positive metrics, stat increases */
+
+  /* ---- Radius ---- */
+  --radius-card: 16px;
+  --radius-button: 10px;
+  --radius-pill: 9999px;
+
+  /* ---- Elevation ---- */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-lift: 0 20px 40px rgba(0, 0, 0, 0.05);
+
+  /* ---- Motion (mirrored in src/theme/motion.ts for framer-motion) ---- */
+  --duration-micro: 200ms;
+  --duration-entrance: 350ms;
+  --ease-entrance: cubic-bezier(0, 0, 0.2, 1);
+  --ease-interactive: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: Inter, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Stat numbers align in columns */
+[data-stat] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Visible focus for keyboard navigation, brand-colored */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-text-primary);
+}
+
+/* ---- Canonical component classes ---- */
+
+/* Card: white surface, 1px border, soft shadow, 24–32px internal padding */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+@media (min-width: 768px) {
+  .card {
+    padding: 32px;
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  border-radius: var(--radius-button);
+  padding: 10px 20px;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-interactive),
+    border-color var(--duration-micro) var(--ease-interactive);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border: 1px solid transparent;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+  border-color: var(--color-text-secondary);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tag / nav pill */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Entrance animations collapse to simple state changes for users who opt out */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

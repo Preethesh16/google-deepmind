@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Orbit | Onboarding — Solo or Team</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+
+<!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center gap-4">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-lg">orbit</span>
+      </span>
+      <span class="font-extrabold text-xl tracking-tight">Orbit</span>
+    </a>
+    <div id="lang-selector" class="hidden sm:flex"></div>
+  </div>
+</nav>
+
+<main class="pt-36 pb-24 px-margin-mobile md:px-margin-desktop max-w-5xl mx-auto space-y-16">
+
+  <!-- Step 1: mode choice -->
+  <section id="step-mode" class="text-center space-y-stack-lg">
+    <h1 class="text-headline-lg-mobile md:text-headline-xl font-bold" data-i18n="onboarding.welcome">Welcome to Orbit</h1>
+    <p class="text-body-lg text-on-surface-variant" data-i18n="onboarding.question">How are you building this?</p>
+
+    <div class="grid md:grid-cols-2 gap-gutter pt-8 text-left">
+      <!-- Solo card -->
+      <button onclick="chooseMode('solo')" id="card-solo"
+        class="mode-card p-8 rounded-xl bg-white border-2 border-outline-variant/40 hover:border-primary hover:shadow-xl transition-all space-y-4 text-left">
+        <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-3xl">person</span>
+        </div>
+        <h2 class="text-headline-lg font-semibold" data-i18n="onboarding.solo.title">Solo founder</h2>
+        <p class="text-body-md text-on-surface-variant" data-i18n="onboarding.solo.body">
+          One Gemma vault, one profile. Everything private stays on your device; agents see only scoped, derived facts.
+        </p>
+        <div class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-green-600 text-lg">lock</span>
+          Single Gemma vault · single profile
+        </div>
+      </button>
+
+      <!-- Team card -->
+      <button onclick="chooseMode('team')" id="card-team"
+        class="mode-card p-8 rounded-xl bg-white border-2 border-outline-variant/40 hover:border-primary hover:shadow-xl transition-all space-y-4 text-left">
+        <div class="w-14 h-14 bg-tertiary/10 rounded-full flex items-center justify-center text-tertiary">
+          <span class="material-symbols-outlined text-3xl">groups</span>
+        </div>
+        <h2 class="text-headline-lg font-semibold" data-i18n="onboarding.team.title">With a team</h2>
+        <p class="text-body-md text-on-surface-variant" data-i18n="onboarding.team.body">
+          A shared workspace with per-person Gemma vaults. Invite co-founders and hires with role-scoped access — personal data never syncs.
+        </p>
+        <div class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-tertiary text-lg">shield_person</span>
+          Team Gemma vault · multi-profile
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Step 2 (team only): invites + roles -->
+  <section id="step-team" class="hidden space-y-10">
+    <div class="text-center space-y-4">
+      <h2 class="text-headline-lg font-bold" data-i18n="onboarding.invite.title">Invite your team</h2>
+      <p class="text-body-md text-on-surface-variant max-w-2xl mx-auto" data-i18n="onboarding.invite.body">
+        Each person gets their own Gemma-protected profile: a role, a permission scope, and a private vault on their own device.
+      </p>
+    </div>
+
+    <div class="bg-white rounded-xl border border-outline-variant/40 shadow-lg p-6 md:p-10 space-y-6">
+      <div class="grid md:grid-cols-[1fr_220px_auto] gap-4 items-end">
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant" data-i18n="onboarding.invite.email">Email address</span>
+          <input id="invite-email" type="email" placeholder="cofounder@example.com"
+            class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+        </label>
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant" data-i18n="onboarding.invite.role">Role</span>
+          <select id="invite-role" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+            <option value="Co-founder">Co-founder</option>
+            <option value="Ops hire">Ops hire</option>
+            <option value="Marketer">Marketer</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </label>
+        <button onclick="addInvite()"
+          class="bg-primary text-on-primary px-6 py-2.5 rounded-full text-label-sm font-bold active:scale-95 transition-all h-fit" data-i18n="onboarding.invite.add">
+          Add invite
+        </button>
+      </div>
+
+      <ul id="invite-list" class="divide-y divide-outline-variant/30"></ul>
+
+      <button onclick="finish()"
+        class="w-full bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/20 hover:brightness-110 transition-all" data-i18n="onboarding.invite.send">
+        Send invites &amp; create workspace
+      </button>
+    </div>
+
+    <!-- Role scope reference (ORBIT.md Section 2 sync table) -->
+    <div class="bg-surface-container-low rounded-xl p-6 md:p-10 space-y-6">
+      <h3 class="text-headline-lg font-semibold text-center" data-i18n="onboarding.scope.title">What each role can see</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-body-md">
+          <thead>
+            <tr class="border-b border-outline-variant/40 text-label-sm uppercase tracking-wider text-on-surface-variant">
+              <th class="py-3 pr-6">Syncs to shared team context</th>
+              <th class="py-3">Stays profile-local (never synced)</th>
+            </tr>
+          </thead>
+          <tbody class="align-top">
+            <tr class="border-b border-outline-variant/20">
+              <td class="py-3 pr-6">Validated market research</td>
+              <td class="py-3">Personal notes, private doubts</td>
+            </tr>
+            <tr class="border-b border-outline-variant/20">
+              <td class="py-3 pr-6">Legal/compliance status</td>
+              <td class="py-3">Individual salary/equity discussions</td>
+            </tr>
+            <tr class="border-b border-outline-variant/20">
+              <td class="py-3 pr-6">Approved brand positioning</td>
+              <td class="py-3">Draft messages not yet sent to team</td>
+            </tr>
+            <tr class="border-b border-outline-variant/20">
+              <td class="py-3 pr-6">Live product/pricing state</td>
+              <td class="py-3">Any document a profile marks "private"</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-6">Business-relevant agent history</td>
+              <td class="py-3">Personal identity documents (PAN/Aadhaar)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Done state -->
+  <section id="step-done" class="hidden text-center space-y-6 py-16">
+    <div class="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+      <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
+    </div>
+    <h2 class="text-headline-lg font-bold">Workspace created</h2>
+    <p class="text-body-md text-on-surface-variant max-w-md mx-auto">
+      Your Gemma vault is initializing on this device. Next: tell Orbit your idea — in any language.
+    </p>
+    <a href="workflow.html" class="inline-block bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/20" data-i18n="onboarding.continue">Continue</a>
+  </section>
+
+</main>
+
+<script src="assets/i18n.js"></script>
+<script>
+  const invites = [];
+
+  function chooseMode(mode) {
+    document.getElementById("card-solo").classList.toggle("border-primary", mode === "solo");
+    document.getElementById("card-team").classList.toggle("border-primary", mode === "team");
+    if (mode === "team") {
+      document.getElementById("step-team").classList.remove("hidden");
+      document.getElementById("step-done").classList.add("hidden");
+      document.getElementById("step-team").scrollIntoView({ behavior: "smooth" });
+    } else {
+      document.getElementById("step-team").classList.add("hidden");
+      finish();
+    }
+  }
+
+  function addInvite() {
+    const email = document.getElementById("invite-email").value.trim();
+    const role = document.getElementById("invite-role").value;
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      document.getElementById("invite-email").focus();
+      return;
+    }
+    invites.push({ email, role });
+    document.getElementById("invite-email").value = "";
+    renderInvites();
+  }
+
+  function removeInvite(i) {
+    invites.splice(i, 1);
+    renderInvites();
+  }
+
+  function renderInvites() {
+    document.getElementById("invite-list").innerHTML = invites
+      .map(
+        (inv, i) => `
+        <li class="flex items-center justify-between py-3">
+          <div class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-sm">${inv.email[0].toUpperCase()}</span>
+            <div>
+              <p class="text-body-md font-medium">${inv.email}</p>
+              <p class="text-label-sm text-on-surface-variant">${inv.role} · own Gemma vault, role-scoped access</p>
+            </div>
+          </div>
+          <button onclick="removeInvite(${i})" class="text-on-surface-variant hover:text-error transition-colors">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </li>`
+      )
+      .join("");
+  }
+
+  function finish() {
+    document.getElementById("step-done").classList.remove("hidden");
+    document.getElementById("step-done").scrollIntoView({ behavior: "smooth" });
+  }
+</script>
+</body>
+</html>

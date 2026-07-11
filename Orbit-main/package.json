@@ -1,0 +1,24 @@
+{
+  "name": "orbit-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/server",
+    "packages/client"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=packages/server",
+    "dev:client": "npm run dev --workspace=packages/client",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:core": "npm run build --workspace=packages/core",
+    "build:server": "npm run build --workspace=packages/server",
+    "build:client": "npm run build --workspace=packages/client",
+    "build": "npm run build:core && npm run build:server && npm run build:client",
+    "start": "npm run start --workspace=packages/server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Orbit | Workflow — From Idea to Running Company</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center gap-4">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-lg">orbit</span>
+      </span>
+      <span class="font-extrabold text-xl tracking-tight">Orbit</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div id="lang-selector" class="hidden sm:flex"></div>
+      <button id="reset-btn" onclick="OrbitStore.reset(); location.reload();" class="hidden text-label-sm text-on-surface-variant hover:text-error transition-colors font-medium">Reset workspace</button>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-4xl mx-auto space-y-10">
+
+  <!-- ══════════ INTAKE: shown until the founder fills their details ══════════ -->
+  <section id="intake" class="hidden max-w-xl mx-auto space-y-8">
+    <header class="text-center space-y-3">
+      <h1 class="text-headline-lg-mobile md:text-headline-xl font-bold" data-i18n="workflow.title">From idea to a running company</h1>
+      <p class="text-body-md text-on-surface-variant">No workspace yet. Fill in your details — every step below starts empty and only completes as <em>you</em> run it. Progress is saved on this device.</p>
+    </header>
+
+    <form class="bg-white rounded-xl border border-outline-variant/40 shadow-lg p-8 space-y-5" onsubmit="createWorkspace(event)">
+      <label class="block">
+        <span class="text-label-sm font-bold text-on-surface-variant">Your name</span>
+        <input id="f-name" required type="text" placeholder="Preethesh" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+      </label>
+      <label class="block">
+        <span class="text-label-sm font-bold text-on-surface-variant">Gmail</span>
+        <input id="f-email" required type="email" placeholder="you@gmail.com" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+      </label>
+      <p class="text-label-sm text-on-surface-variant flex items-start gap-2">
+        <span class="material-symbols-outlined text-primary text-lg">info</span>
+        That's all we need. Your brand, idea, and financials sync in from your Gemma vault once document ingestion runs (coming from Ashish's track).
+      </p>
+      <button type="submit" class="w-full bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/20 hover:brightness-110 transition-all">
+        Create my workspace
+      </button>
+    </form>
+  </section>
+
+  <!-- ══════════ WORKSPACE: the founder's actual roadmap ══════════ -->
+  <section id="workspace" class="hidden space-y-8">
+    <header class="bg-[#111111] text-white rounded-xl p-6 md:p-8 flex flex-wrap items-center gap-6">
+      <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-2xl font-extrabold" id="ws-avatar"></div>
+      <div class="flex-1 min-w-[200px]">
+        <h1 class="text-2xl font-extrabold" id="ws-title"></h1>
+        <p class="text-white/60 text-sm" id="ws-founder"></p>
+      </div>
+      <div class="text-center">
+        <p class="text-2xl font-bold" id="ws-count">0/12</p>
+        <p class="text-white/40 text-xs">Steps done</p>
+      </div>
+    </header>
+
+    <div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+      <span class="material-symbols-outlined text-green-600">lock</span>
+      <p class="text-sm text-green-800"><strong>Gemma vault active on this device.</strong> Your details stay local — agents only ever see derived facts.</p>
+    </div>
+
+    <ol id="roadmap" class="relative border-l-2 border-outline-variant/40 ml-5 space-y-8"></ol>
+
+    <div class="text-center pt-8">
+      <a href="/" class="inline-block bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/20">Open your workspace dashboard</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/store.js"></script>
+<script>
+/* Step definitions. `desc` is what the step WILL do (shown while queued);
+   `result(f)` is the personalized outcome once the founder runs it.
+   Statuses come purely from saved progress — nothing is pre-filled. */
+const STEPS = [
+  { n: "0", icon: "door_open", agent: "Workspace", title: "Onboarding",
+    desc: "Choose Solo or Team; the Gemma vault is created on your device.",
+    result: (f) => `${f.mode === "solo" ? "Solo" : "Team"} mode. Gemma vault created on ${f.name}'s device. Profile: Founder (full access).` },
+  { n: "0.5", icon: "upload_file", agent: "Gemma (on-device)", title: "Document ingestion",
+    desc: "Upload ITRs, GST returns, bank statements, invoices — parsed locally, raw documents never leave the device.",
+    result: (f) => f.cost
+      ? `Invoices parsed locally. Extracted (stays local): unit cost ₹${f.cost}. Synced to agents (derived only): "margin potential ~${f.margin}% at ₹${f.price}".`
+      : `No documents uploaded — agents will use conversation + public benchmarks. You can ingest documents anytime to ground the numbers.` },
+  { n: "1", icon: "lightbulb", agent: "Founder → Manager Agent", title: "Intent",
+    desc: "Tell Orbit your one-line idea, in any language.",
+    result: (f) => `"${f.idea}" — accepted. Roadmap generated for ${f.brand}.` },
+  { n: "2", icon: "search_insights", agent: "Research Agent", title: "Validation",
+    desc: "Competitor scan, market size, pricing gap — grounded in your real financials if documents were ingested.",
+    result: (f) => f.clothing
+      ? `Indian streetwear ≈ ₹3,900 Cr, +25% YoY. Competitors: Bonkers Corner (₹599–799), Bewakoof (₹399 floor), Urbanic. Gap for ${f.brand}: premium-feel oversized under ₹599 with regional-language drop culture. ✅ Validated.`
+      : `Category "${f.category}" scanned: market sized, top competitors and pricing pulled, a defensible gap identified for ${f.brand}. ✅ Validated.` },
+  { n: "3", icon: "call_split", agent: "Legal + Brand & Marketing", title: "Parallel build-out",
+    desc: "Legal determines registrations and compliance while Brand drafts positioning and multilingual copy.",
+    result: (f) => `Legal: sole proprietorship now, Pvt Ltd path mapped; GST registration application pre-filled; "${f.brand}" trademark appears available. Brand: positioning + landing copy drafted in EN/KN/TA from one content model.` },
+  { n: "4", icon: "balance", agent: "Conflict Resolution Agent", title: "Conflict resolution",
+    desc: "Wherever Marketing's claims outrun what Legal has cleared, arbitration happens visibly.",
+    result: (f) => f.clothing
+      ? `Brand wanted "100% organic cotton"; Legal vetoed (no GOTS cert on file). Resolved: "heavyweight 240 GSM combed cotton" — true, and converts better. Logged.`
+      : `Brand's strongest claim for ${f.brand} outran Legal's clearance; softened version shipped, original queued behind the missing certification. Logged.` },
+  { n: "5", icon: "rocket_launch", agent: "Build Agent + Antigravity", title: "First build",
+    desc: "The real, live, multilingual website/MVP is generated from the reconciled positioning and legal constraints.",
+    result: (f) => `${f.site} is live: ${f.clothing ? "drop countdown, size chart, " : ""}EN/KN/TA toggle, Razorpay checkout, COD enabled. It stays editable in plain language via Antigravity.` },
+  { n: "6", icon: "trending_up", agent: "Sales/GTM Agent", title: "Go-to-market",
+    desc: "Outbound and pricing checked against real margin data, inside what Legal has cleared.",
+    result: (f) => `Price locked at ₹${f.price}${f.cost ? ` (your ₹${f.cost} unit cost → ${f.margin}% margin)` : " (category benchmark)"}. Launch kit drafted: 40 outreach DMs, Reels calendar, WhatsApp broadcast — awaiting your approval.` },
+  { n: "7", icon: "support_agent", agent: "Support Agent", title: "Live support",
+    desc: "First-layer customer questions answered in whatever language the customer writes.",
+    result: (f) => `Live on ${f.site}. First query (Kannada): "size available idya?" → answered in Kannada from the live catalog, zero founder involvement.` },
+  { n: "8", icon: "all_inclusive", agent: "Antigravity (ongoing)", title: "Continuous improvement",
+    desc: "Founder-requested or agent-proposed edits — conflict-checked, versioned, instantly reversible.",
+    result: (f) => `Watching conversions on ${f.site}. Proposed: "Free shipping over ₹999" (Legal cleared). One tap deploys, rollback instant.` },
+  { n: "9", icon: "group_add", agent: "Workspace", title: "Team growth",
+    desc: "New members sync into the shared context immediately, scoped by role.",
+    result: (f) => f.mode === "team"
+      ? `Invite flow open — each member gets their own Gemma vault and role-scoped view of ${f.brand}'s shared context.`
+      : `Ready when you are — your first hire gets their own vault and role-scoped view. Your financials never leak to them.` },
+];
+
+let state = OrbitStore.load();
+
+function createWorkspace(e) {
+  e.preventDefault();
+  const g = (id) => document.getElementById(id).value.trim();
+  /* Only identity is collected here. Brand, idea, category, mode, and
+     financials arrive later from the Gemma vault API (Ashish's ingestion
+     track) — until then, enrich() fills vault-pending placeholders. */
+  state = {
+    founder: { name: g("f-name"), email: g("f-email") },
+    progress: 1, // creating the workspace IS Step 0
+  };
+  OrbitStore.save(state);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function runStep(i) {
+  if (i !== state.progress) return;
+  state.progress = i + 1;
+  OrbitStore.save(state);
+  render();
+}
+
+/* Fills vault-sourced fields with placeholders until the Gemma vault API
+   (Ashish's ingestion track) supplies the real values. */
+function enrich(f) {
+  const brand = f.brand || "your brand";
+  const cost = f.cost || null;
+  const price = cost ? Math.round((cost * 2.6) / 10) * 10 - 1 : 549;
+  return {
+    ...f,
+    brand,
+    idea: f.idea || "(idea pending — will sync from your Gemma vault)",
+    category: f.category || "(category pending — from Gemma vault)",
+    mode: f.mode || "solo",
+    cost,
+    price,
+    margin: cost ? Math.round((1 - cost / price) * 100) : null,
+    site: (f.brand ? f.brand.toLowerCase().replace(/[^a-z0-9]/g, "") : "yourbrand") + "-store.orbit.site",
+    clothing: (f.category || "").startsWith("Clothing"),
+    vaultPending: !f.brand,
+  };
+}
+
+function render() {
+  const hasWs = !!(state && state.founder);
+  document.getElementById("intake").classList.toggle("hidden", hasWs);
+  document.getElementById("workspace").classList.toggle("hidden", !hasWs);
+  document.getElementById("reset-btn").classList.toggle("hidden", !hasWs);
+  if (!hasWs) return;
+
+  const f = enrich(state.founder);
+  document.getElementById("ws-avatar").textContent = (f.vaultPending ? f.name : f.brand)[0].toUpperCase();
+  document.getElementById("ws-title").textContent = f.vaultPending ? `${f.name}'s workspace` : f.brand;
+  document.getElementById("ws-founder").textContent =
+    `${f.name} · ${f.mode === "solo" ? "solo founder" : "team workspace"} · ${OrbitStore.maskEmail(f.email)}` +
+    (f.vaultPending ? " · business context pending from Gemma vault" : "");
+  document.getElementById("ws-count").textContent = `${state.progress}/${STEPS.length}`;
+
+  document.getElementById("roadmap").innerHTML = STEPS.map((s, i) => {
+    const done = i < state.progress;
+    const next = i === state.progress;
+    const dot = done ? "bg-green-500" : next ? "bg-primary animate-pulse" : "bg-outline-variant";
+    const badge = done
+      ? '<span class="ml-auto px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-green-100 text-green-700">Done</span>'
+      : next
+      ? '<span class="ml-auto px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary">Up next</span>'
+      : '<span class="ml-auto px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant">Queued</span>';
+    const runBtn = next
+      ? `<button onclick="runStep(${i})" class="mt-3 bg-primary text-white px-6 py-2.5 rounded-full text-label-sm font-bold active:scale-95 transition-all shadow-lg shadow-primary/20">Run this step</button>`
+      : "";
+    return `
+    <li class="relative pl-10">
+      <span class="absolute -left-[13px] top-1 w-6 h-6 rounded-full ${dot} ring-4 ring-surface"></span>
+      <div class="bg-white rounded-xl border border-outline-variant/30 shadow-sm p-6 space-y-2 ${next ? "ring-2 ring-primary" : ""} ${!done && !next ? "opacity-60" : ""}">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="material-symbols-outlined text-primary">${s.icon}</span>
+          <h2 class="text-body-lg font-bold">Step ${s.n} — ${s.title}</h2>
+          ${badge}
+        </div>
+        <p class="text-label-sm text-on-surface-variant font-medium">${s.agent}</p>
+        <p class="text-body-md text-on-surface-variant">${done ? s.result(f) : s.desc}</p>
+        ${runBtn}
+      </div>
+    </li>`;
+  }).join("");
+}
+
+render();
+</script>
+</body>
+</html>

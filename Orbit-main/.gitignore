@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+.env
+packages/server/orbit_secure_db.json
+packages/server/dist/
+packages/client/dist/
+packages/core/dist/
+*.log
+.system_generated/
+.gemini/
+.vs/
+.idea/
+.vscode/
+
+# Compiled artifacts must never be committed (they shadow .tsx in Vite)
+*.tsbuildinfo
+packages/client/src/**/*.js
+packages/client/src/**/*.js.map
+packages/client/src/**/*.d.ts
+packages/client/src/**/*.d.ts.map
+packages/server/uploads/

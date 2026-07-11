@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Orbit | Live Demo — Try the Workflow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center gap-4">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-lg">orbit</span>
+      </span>
+      <span class="font-extrabold text-xl tracking-tight">Orbit</span>
+    </a>
+    <span class="px-3 py-1 rounded-full bg-tertiary/10 text-tertiary text-[11px] font-bold uppercase tracking-wider">Demo mode — simulated agents</span>
+  </div>
+</nav>
+
+<main class="pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-5xl mx-auto">
+
+  <!-- ══════════ INTAKE FORM ══════════ -->
+  <section id="intake" class="max-w-xl mx-auto space-y-8">
+    <header class="text-center space-y-3">
+      <h1 class="text-headline-lg-mobile md:text-headline-xl font-bold">Try Orbit with your business</h1>
+      <p class="text-body-md text-on-surface-variant">Enter your details and watch the full Step 0 → 9 agent workflow run for <em>your</em> company. Nothing is sent anywhere — this demo runs entirely in your browser.</p>
+    </header>
+
+    <form id="demo-form" class="bg-white rounded-xl border border-outline-variant/40 shadow-lg p-8 space-y-5" onsubmit="startDemo(event)">
+      <label class="block">
+        <span class="text-label-sm font-bold text-on-surface-variant">Your name</span>
+        <input id="f-name" required type="text" placeholder="Preethesh" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+      </label>
+      <label class="block">
+        <span class="text-label-sm font-bold text-on-surface-variant">Email</span>
+        <input id="f-email" required type="email" placeholder="you@gmail.com" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+      </label>
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant">Brand name</span>
+          <input id="f-brand" required type="text" placeholder="CAZ" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+        </label>
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant">Category</span>
+          <select id="f-category" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+            <option>Clothing / Fashion</option>
+            <option>Food & Beverage</option>
+            <option>D2C / E-commerce</option>
+            <option>Services</option>
+            <option>Tech / SaaS</option>
+          </select>
+        </label>
+      </div>
+      <label class="block">
+        <span class="text-label-sm font-bold text-on-surface-variant">Describe your idea in one line (any language)</span>
+        <input id="f-idea" required type="text" placeholder="Oversized streetwear tees for college students in India" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+      </label>
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant">Mode</span>
+          <select id="f-mode" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+            <option value="solo">Solo founder</option>
+            <option value="team">With a team</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-label-sm font-bold text-on-surface-variant">Unit cost (₹, optional)</span>
+          <input id="f-cost" type="number" min="1" placeholder="210" class="mt-2 w-full rounded-lg border-outline-variant focus:border-primary focus:ring-primary">
+        </label>
+      </div>
+      <button type="submit" class="w-full bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-body-md shadow-xl shadow-primary/20 hover:brightness-110 transition-all">
+        Initialize my Gemma vault &amp; run the workflow
+      </button>
+    </form>
+  </section>
+
+  <!-- ══════════ WORKSPACE SIMULATION ══════════ -->
+  <section id="workspace" class="hidden space-y-8">
+    <!-- Workspace header -->
+    <header class="bg-[#111111] text-white rounded-xl p-6 md:p-8 flex flex-wrap items-center gap-6">
+      <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-2xl font-extrabold" id="ws-avatar">C</div>
+      <div class="flex-1 min-w-[200px]">
+        <h1 class="text-2xl font-extrabold" id="ws-title">CAZ</h1>
+        <p class="text-white/60 text-sm" id="ws-founder">Preethesh · solo founder</p>
+      </div>
+      <div class="flex gap-6 text-center">
+        <div><p class="text-2xl font-bold" id="ws-agents">0</p><p class="text-white/40 text-xs">Agents active</p></div>
+        <div><p class="text-2xl font-bold" id="ws-steps">0/11</p><p class="text-white/40 text-xs">Steps done</p></div>
+        <div><p class="text-2xl font-bold" id="ws-approvals">0</p><p class="text-white/40 text-xs">Approvals waiting</p></div>
+      </div>
+    </header>
+
+    <div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+      <span class="material-symbols-outlined text-green-600">lock</span>
+      <p class="text-sm text-green-800"><strong>Gemma vault initialized on this device.</strong> Your email and financials below never leave it — agents only see derived facts.</p>
+    </div>
+
+    <!-- Steps stream in here -->
+    <ol id="feed" class="space-y-4"></ol>
+
+    <!-- Approvals -->
+    <div id="approvals-card" class="hidden bg-white rounded-xl border-2 border-primary/40 shadow-lg p-6 space-y-4">
+      <h2 class="font-bold text-body-lg flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">approval</span>
+        Pending your approval
+      </h2>
+      <ul id="approvals-list" class="space-y-3"></ul>
+    </div>
+
+    <div class="text-center pt-6">
+      <button onclick="location.reload()" class="bg-white border border-outline-variant px-8 py-3 rounded-full font-bold text-body-md hover:bg-surface-container-low transition-all">Run again with different details</button>
+    </div>
+  </section>
+</main>
+
+<script src="assets/i18n.js"></script>
+<script>
+/* Demo simulation. All content is generated client-side from the intake form —
+   the same shape the real Manager Agent roadmap API will return, so this page
+   can later be pointed at live agents without changing the rendering. */
+
+function startDemo(e) {
+  e.preventDefault();
+  const d = {
+    name: val("f-name"), email: val("f-email"), brand: val("f-brand"),
+    category: val("f-category"), idea: val("f-idea"), mode: val("f-mode"),
+    cost: parseInt(val("f-cost"), 10) || null,
+  };
+  document.getElementById("intake").classList.add("hidden");
+  const ws = document.getElementById("workspace");
+  ws.classList.remove("hidden");
+
+  document.getElementById("ws-avatar").textContent = d.brand[0].toUpperCase();
+  document.getElementById("ws-title").textContent = d.brand;
+  document.getElementById("ws-founder").textContent =
+    `${d.name} · ${d.mode === "solo" ? "solo founder" : "team workspace"} · ${maskEmail(d.email)}`;
+
+  playSteps(buildSteps(d));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+const val = (id) => document.getElementById(id).value.trim();
+
+/* Email shown masked — reinforces the privacy story even in a demo. */
+function maskEmail(email) {
+  const [user, domain] = email.split("@");
+  return user.slice(0, 3) + "•••@" + domain;
+}
+
+function buildSteps(d) {
+  const price = d.cost ? Math.round((d.cost * 2.6) / 10) * 10 - 1 : 549;
+  const margin = d.cost ? Math.round((1 - d.cost / price) * 100) : 58;
+  const site = d.brand.toLowerCase().replace(/[^a-z0-9]/g, "") + "-store.orbit.site";
+  const clothing = d.category.startsWith("Clothing");
+
+  return [
+    { icon: "door_open", agent: "Workspace", title: "Step 0 — Onboarding", status: "done",
+      body: `${d.mode === "solo" ? "Solo" : "Team"} mode selected. Gemma vault created on ${d.name}'s device. Profile: Founder (full access).` },
+    { icon: "upload_file", agent: "Gemma · on-device", title: "Step 0.5 — Document ingestion", status: "done",
+      body: d.cost
+        ? `Parsed your uploaded invoices locally. Extracted (stays local): unit cost ₹${d.cost}. Synced to agents (derived only): "gross margin potential ~${margin}% at ₹${price}". Identity documents never leave this device.`
+        : `No documents uploaded — agents will work from conversation and public benchmarks. You can ingest ITRs/GST/bank statements anytime to ground the numbers.` },
+    { icon: "lightbulb", agent: "Manager Agent", title: "Step 1 — Intent", status: "done",
+      body: `"${d.idea}" — accepted. Roadmap generated for ${d.brand}: 9 steps, 3 running in parallel.` },
+    { icon: "search_insights", agent: "Research Agent", title: "Step 2 — Validation", status: "done",
+      body: clothing
+        ? `Indian streetwear ≈ ₹3,900 Cr, +25% YoY; oversized-fit is the fastest-growing cut. Competitors: Bonkers Corner (₹599–799), Bewakoof (₹399 floor, discount-heavy), Urbanic. Gap: premium-feel oversized under ₹599 with regional-language drop culture. Verdict: ✅ validated — differentiate on drops + local slang graphics, not price.`
+        : `Scanned category "${d.category}": market sizing, top 5 competitors and their pricing pulled; a defensible positioning gap identified for ${d.brand}. Verdict: ✅ validated with one repositioning note.` },
+    { icon: "gavel", agent: "Legal & Compliance Agent", title: "Step 3a — Legal build-out", status: "done",
+      body: `Recommended structure: sole proprietorship (upgrade path to Pvt Ltd mapped). GST registration required before selling online — application pre-filled${d.cost ? " from your ingested documents" : ""}, waiting for approval. Trademark search: "${d.brand}" appears available in its class — filing draft ready (₹4,500 govt fee).`, approval: `File GST registration for ${d.brand}` },
+    { icon: "campaign", agent: "Brand & Marketing Agent", title: "Step 3b — Brand build-out", status: "done",
+      body: `Positioning drafted for ${d.brand}${clothing ? ': "Made loud, worn louder." Drop-based scarcity model, 3 designs per drop' : ""}. Landing copy generated in English + Kannada + Tamil from one content model — locale variants can't drift apart.` },
+    { icon: "balance", agent: "Conflict Resolution Agent", title: "Step 4 — Conflict resolution", status: "done",
+      body: clothing
+        ? `Brand Agent wanted "100% organic cotton" on the homepage; Legal vetoed — no GOTS certification on file. Resolved to "heavyweight 240 GSM combed cotton": true, and converts better in this segment. Fully logged.`
+        : `Brand Agent's strongest claim outran what Legal has cleared for ${d.brand}. Arbitrated in real time; softened claim shipped, original queued behind the missing certification. Fully logged.` },
+    { icon: "rocket_launch", agent: "Build Agent + Antigravity", title: "Step 5 — First build", status: "done",
+      body: `${site} is live: ${clothing ? "drop countdown, size chart, " : ""}EN/KN/TA toggle, Razorpay checkout, COD enabled. This is a living working tree — say "make the hero warmer" in any language and Antigravity edits and redeploys.` },
+    { icon: "trending_up", agent: "Sales/GTM Agent", title: "Step 6 — Go-to-market", status: "done",
+      body: `Price locked at ₹${price}${d.cost ? ` (your real ₹${d.cost} unit cost → ${margin}% margin, checked against vault data)` : " (category benchmark)"}. Launch kit drafted: 40 outreach DMs, Reels calendar, WhatsApp broadcast template.`, approval: `Approve launch kit & outreach for ${d.brand}` },
+    { icon: "support_agent", agent: "Support Agent", title: "Step 7 — Live support", status: "active",
+      body: `Standing by on the live site. Simulated first query (Kannada): "XL size available idya?" → answered in Kannada from the live catalog in 40 seconds, zero founder involvement.` },
+    { icon: "all_inclusive", agent: "Antigravity · ongoing", title: "Step 8 — Continuous improvement", status: "active",
+      body: `Watching conversions. Detected: 71% cart abandonment at the shipping-cost step. Proposed edit: "Free shipping over ₹999" — Legal cleared it. One tap deploys; instant rollback from the local version vault.`, approval: `Deploy "Free shipping over ₹999" edit` },
+    { icon: "group_add", agent: "Workspace", title: "Step 9 — Team growth", status: d.mode === "team" ? "active" : "pending",
+      body: d.mode === "team"
+        ? `Invite flow open — each member gets their own Gemma vault and role-scoped access to ${d.brand}'s shared context.`
+        : `Not yet — the moment your first hire joins, they get their own vault and role-scoped view. Your financials never leak to them.` },
+  ];
+}
+
+const BADGE = {
+  done:    { cls: "bg-green-100 text-green-700", label: "Done" },
+  active:  { cls: "bg-primary/10 text-primary",  label: "Live" },
+  pending: { cls: "bg-surface-container text-on-surface-variant", label: "Queued" },
+};
+
+/* Steps stream in one-by-one so it feels like agents actually working. */
+function playSteps(steps) {
+  const feed = document.getElementById("feed");
+  const approvals = [];
+  let done = 0;
+
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      const b = BADGE[s.status];
+      const li = document.createElement("li");
+      li.className = "bg-white rounded-xl border border-outline-variant/30 shadow-sm p-6 space-y-2 opacity-0 translate-y-3 transition-all duration-500";
+      li.innerHTML = `
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="material-symbols-outlined text-primary">${s.icon}</span>
+          <h2 class="font-bold text-body-md">${s.title}</h2>
+          <span class="ml-auto px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${b.cls}">${b.label}</span>
+        </div>
+        <p class="text-label-sm font-bold text-on-surface-variant">${s.agent}</p>
+        <p class="text-body-md text-on-surface-variant">${s.body}</p>`;
+      feed.appendChild(li);
+      requestAnimationFrame(() => li.classList.remove("opacity-0", "translate-y-3"));
+
+      if (s.status === "done") done++;
+      document.getElementById("ws-steps").textContent = `${done}/${steps.length}`;
+      document.getElementById("ws-agents").textContent = Math.min(i + 1, 8);
+
+      if (s.approval) {
+        approvals.push(s.approval);
+        renderApprovals(approvals);
+      }
+      li.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 700 * (i + 1));
+  });
+}
+
+function renderApprovals(items) {
+  const card = document.getElementById("approvals-card");
+  card.classList.remove("hidden");
+  document.getElementById("ws-approvals").textContent = items.length;
+  document.getElementById("approvals-list").innerHTML = items
+    .map(
+      (a) => `
+      <li class="flex items-center justify-between gap-4 p-3 rounded-lg bg-surface border border-outline-variant/30">
+        <span class="text-body-md">${a}</span>
+        <button onclick="this.closest('li').style.opacity=0.4; this.textContent='Approved ✓'; this.disabled=true;"
+          class="shrink-0 bg-primary text-white px-4 py-2 rounded-full text-label-sm font-bold active:scale-95 transition-all">Approve</button>
+      </li>`
+    )
+    .join("");
+}
+</script>
+</body>
+</html>
