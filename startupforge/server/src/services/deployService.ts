@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as net from 'net';
-import { repairDefaultExports } from './projectRepair';
+import { repairDefaultExports, ensureRouterContext } from './projectRepair';
 
 const execAsync = promisify(exec);
 
@@ -161,6 +161,19 @@ export async function deployMVP(projectPath: string, socket: Socket): Promise<{
       socket.emit('deploy:progress', {
         step: 0,
         message: `🔧 Auto-added missing default export(s) to: ${fixedExports.join(', ')}`,
+      });
+    }
+  } catch { /* non-fatal */ }
+
+  // Fix missing <Router> context — components that use useNavigate/<Link> but
+  // no BrowserRouter/HashRouter is rendered ("useNavigate() may be used only in
+  // the context of a <Router> component") — by wrapping <App /> in a HashRouter.
+  try {
+    const routerFixed = ensureRouterContext(projectPath);
+    if (routerFixed.length > 0) {
+      socket.emit('deploy:progress', {
+        step: 0,
+        message: `🔧 Wrapped app in <HashRouter> for react-router context: ${routerFixed.join(', ')}`,
       });
     }
   } catch { /* non-fatal */ }

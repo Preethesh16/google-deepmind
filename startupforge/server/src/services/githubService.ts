@@ -15,7 +15,7 @@ import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Socket } from 'socket.io';
-import { repairDefaultExports } from './projectRepair';
+import { repairDefaultExports, ensureRouterContext } from './projectRepair';
 
 const execAsync = promisify(exec);
 
@@ -280,6 +280,12 @@ function autoRepairForBuild(projectPath: string, emit: (m: string) => void): voi
   try {
     const fixed = repairDefaultExports(projectPath);
     if (fixed.length > 0) emit(`🔧 Added missing default export(s) to: ${fixed.join(', ')}.`);
+  } catch { /* best-effort */ }
+
+  // missing <Router> context (useNavigate/<Link> without a Router → blank page)
+  try {
+    const routerFixed = ensureRouterContext(projectPath);
+    if (routerFixed.length > 0) emit(`🔧 Wrapped app in <HashRouter>: ${routerFixed.join(', ')}.`);
   } catch { /* best-effort */ }
 }
 

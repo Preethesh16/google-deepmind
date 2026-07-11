@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useBusinessStore } from '../stores/useBusinessStore';
+import { IconFolder } from '../components/Icons';
 
 const SERVER = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
@@ -22,11 +23,11 @@ interface Project {
 }
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
-  running: { label: 'Building…', color: '#22D3EE' },
-  built: { label: 'Built', color: '#3B82F6' },
-  deployed: { label: 'Deployed', color: '#10B981' },
-  failed: { label: 'Failed', color: '#EF4444' },
-  pending: { label: 'Pending', color: '#6B7FA3' }
+  running: { label: 'Building', color: '#5BD4EE' },
+  built: { label: 'Built', color: '#7C9CFF' },
+  deployed: { label: 'Deployed', color: '#34D3A6' },
+  failed: { label: 'Failed', color: '#F26D6D' },
+  pending: { label: 'Pending', color: '#8A8F9C' }
 };
 
 export default function Projects() {
@@ -60,11 +61,11 @@ export default function Projects() {
         padding: '16px 28px', borderBottom: '1px solid var(--border)',
         background: 'var(--bg-card)', position: 'sticky', top: 0, zIndex: 20
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ fontSize: 22 }}>📁</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ color: 'var(--accent)', display: 'flex' }}><IconFolder size={20} /></div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 17 }} className="gradient-text">Project Library</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text)' }}>Project Library</div>
+            <div style={{ fontSize: 11.5, color: 'var(--text-3)' }}>
               Every generated MVP — reopen, edit, deploy, or publish any of them
             </div>
           </div>
@@ -98,7 +99,7 @@ export default function Projects() {
                         {name}
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                        🏢 {p.businessName} · {p.industry || 'general'}
+                        {p.businessName} · {p.industry || 'general'}
                       </div>
                     </div>
                     <span style={{
@@ -112,33 +113,33 @@ export default function Projects() {
                   </div>
 
                   <div style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>
-                    📄 {p.filesCreated.length} files · {new Date(p.createdAt).toLocaleString()}
+                    {p.filesCreated.length} files · {new Date(p.createdAt).toLocaleString()}
                   </div>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {p.deployUrl && (
-                      <a href={p.deployUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#10B981')}>
-                        🚀 Live
+                      <a href={p.deployUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#34D3A6')}>
+                        Live
                       </a>
                     )}
                     {p.githubUrl && (
-                      <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#818CF8')}>
-                        🐙 Repo
+                      <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#7C9CFF')}>
+                        Repo
                       </a>
                     )}
                     {p.githubPagesUrl && (
-                      <a href={p.githubPagesUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#22D3EE')}>
-                        🌐 Pages
+                      <a href={p.githubPagesUrl} target="_blank" rel="noopener noreferrer" style={linkChip('#5BD4EE')}>
+                        Pages
                       </a>
                     )}
                   </div>
 
                   <button onClick={() => openProject(p)} style={{
                     marginTop: 4, padding: '9px 14px',
-                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff',
-                    border: 'none', borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: 'pointer'
+                    background: 'var(--accent)', color: '#062018',
+                    border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer'
                   }}>
-                    ✏️ Open & Edit
+                    Open & Edit
                   </button>
                 </div>
               );

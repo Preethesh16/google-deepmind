@@ -5,14 +5,15 @@ import { useBusinessStore } from '../stores/useBusinessStore';
 import { useFeedbackStore, FeedbackItem } from '../stores/useFeedbackStore';
 import { useSocket } from '../hooks/useSocket';
 import AgentGraph from '../components/AgentGraph';
+import { IconShield, IconWrench, IconCheck } from '../components/Icons';
 
-const CATEGORY_META: Record<string, { icon: string; label: string }> = {
-  bug: { icon: '🐛', label: 'Bug' },
-  error: { icon: '💥', label: 'Error' },
-  feature: { icon: '✨', label: 'Feature' },
-  ux: { icon: '🎨', label: 'UX' },
-  performance: { icon: '⚡', label: 'Performance' },
-  other: { icon: '📝', label: 'Other' }
+const CATEGORY_META: Record<string, { label: string }> = {
+  bug: { label: 'Bug' },
+  error: { label: 'Error' },
+  feature: { label: 'Feature' },
+  ux: { label: 'UX' },
+  performance: { label: 'Performance' },
+  other: { label: 'Other' }
 };
 
 const PRIORITY_COLOR: Record<string, string> = { high: '#EF4444', medium: '#F59E0B', low: '#6B7FA3' };
@@ -75,11 +76,11 @@ export default function FixCenter() {
         padding: '16px 28px', borderBottom: '1px solid var(--border)',
         background: 'var(--bg-card)', position: 'sticky', top: 0, zIndex: 20
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ fontSize: 22 }}>🛡️</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ color: 'var(--accent)', display: 'flex' }}><IconShield size={20} /></div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 17 }} className="gradient-text">Fix Center</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text)' }}>Fix Center</div>
+            <div style={{ fontSize: 11.5, color: 'var(--text-3)' }}>
               Autonomous feedback resolution · {profile.businessName || 'Your startup'}
             </div>
           </div>
@@ -92,12 +93,12 @@ export default function FixCenter() {
       <div style={{ maxWidth: 1180, margin: '0 auto', padding: '24px 28px 60px' }}>
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginBottom: 20 }}>
-          <StatCard label="Total" value={stats.total} color="#6366F1" active={filter === 'all'} onClick={() => setFilter('all')} />
-          <StatCard label="Open" value={stats.open} color="#3B82F6" active={filter === 'open'} onClick={() => setFilter('open')} />
-          <StatCard label="Fixing" value={stats.fixing} color="#22D3EE" active={filter === 'fixing'} onClick={() => setFilter('fixing')} />
-          <StatCard label="Review" value={stats.pending} color="#F59E0B" active={filter === 'pending_approval'} onClick={() => setFilter('pending_approval')} />
-          <StatCard label="Done" value={stats.completed} color="#10B981" active={filter === 'completed'} onClick={() => setFilter('completed')} />
-          <StatCard label="Rejected" value={stats.rejected} color="#EF4444" active={filter === 'rejected'} onClick={() => setFilter('rejected')} />
+          <StatCard label="Total" value={stats.total} color="#8A8F9C" active={filter === 'all'} onClick={() => setFilter('all')} />
+          <StatCard label="Open" value={stats.open} color="#7C9CFF" active={filter === 'open'} onClick={() => setFilter('open')} />
+          <StatCard label="Fixing" value={stats.fixing} color="#5BD4EE" active={filter === 'fixing'} onClick={() => setFilter('fixing')} />
+          <StatCard label="Review" value={stats.pending} color="#F4B860" active={filter === 'pending_approval'} onClick={() => setFilter('pending_approval')} />
+          <StatCard label="Done" value={stats.completed} color="#34D3A6" active={filter === 'completed'} onClick={() => setFilter('completed')} />
+          <StatCard label="Rejected" value={stats.rejected} color="#F26D6D" active={filter === 'rejected'} onClick={() => setFilter('rejected')} />
         </div>
 
         {/* Agent cluster */}
@@ -112,16 +113,16 @@ export default function FixCenter() {
         }}>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={importExcel} disabled={!!busy} style={primaryBtn}>
-              {busy === 'import' ? '⏳ Importing…' : '📥 Import from Excel'}
+              {busy === 'import' ? 'Importing…' : 'Import from Excel'}
             </button>
             <button onClick={syncExcel} disabled={!!busy} style={ghostBtn}>
-              {busy === 'sync' ? '⏳ Syncing…' : '📤 Sync to Excel'}
+              {busy === 'sync' ? 'Syncing…' : 'Sync to Excel'}
             </button>
-            <button onClick={() => setShowForm(true)} style={ghostBtn}>➕ Add Feedback</button>
-            <button onClick={loadFeedback} style={ghostBtn}>↻ Refresh</button>
+            <button onClick={() => setShowForm(true)} style={ghostBtn}>Add Feedback</button>
+            <button onClick={loadFeedback} style={ghostBtn}>Refresh</button>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            📗 {workbookPath || 'feedback.xlsx'}
+            {workbookPath || 'feedback.xlsx'}
           </div>
         </div>
 
@@ -188,7 +189,7 @@ function RequestCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Badges */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-            <Badge bg="rgba(99,102,241,0.15)" color="#A5B4FC">{cat.icon} {cat.label}</Badge>
+            <Badge bg="rgba(124,156,255,0.14)" color="#A9BEFF">{cat.label}</Badge>
             <Badge bg="transparent" color={PRIORITY_COLOR[item.priority]} border>
               ● {item.priority} priority
             </Badge>
@@ -206,7 +207,7 @@ function RequestCard({
             fontSize: 14.5, lineHeight: 1.5, color: 'var(--text-primary)',
             textDecoration: completed ? 'none' : 'none', marginBottom: 8
           }}>
-            {completed && <span style={{ color: 'var(--accent-green)', marginRight: 6 }}>✓</span>}
+            {completed && <span style={{ color: 'var(--accent-green)', marginRight: 6, display: 'inline-flex', verticalAlign: 'middle' }}><IconCheck size={14} /></span>}
             {item.message}
           </div>
 
@@ -224,7 +225,7 @@ function RequestCard({
             }}>
               {item.fixSummary && (
                 <div style={{ fontSize: 12, color: 'var(--accent-green)', marginBottom: 6 }}>
-                  🤖 {item.fixSummary}
+                  {item.fixSummary}
                 </div>
               )}
               {item.filesChanged.length > 0 && (
@@ -232,8 +233,8 @@ function RequestCard({
                   {item.filesChanged.map((f) => (
                     <span key={f} style={{
                       fontSize: 10.5, fontFamily: 'monospace', color: 'var(--accent-cyan)',
-                      background: 'rgba(34,211,238,0.1)', padding: '2px 7px', borderRadius: 6
-                    }}>📄 {f}</span>
+                      background: 'rgba(91,212,238,0.1)', padding: '2px 7px', borderRadius: 6
+                    }}>{f}</span>
                   ))}
                 </div>
               )}
@@ -245,7 +246,7 @@ function RequestCard({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 150, alignItems: 'stretch' }}>
           {item.status === 'open' && (
             <button onClick={onFix} disabled={isBusy} style={fixBtn}>
-              🔧 Fix with Agents
+              <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6 }}><IconWrench size={14} /></span>Fix with Agents
             </button>
           )}
           {item.status === 'fixing' && (
@@ -268,7 +269,7 @@ function RequestCard({
               ...fixBtn, background: 'rgba(16,185,129,0.15)', color: 'var(--accent-green)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'default'
             }}>
-              ✅ Completed
+              Completed
             </div>
           )}
           {item.status === 'rejected' && (
@@ -347,7 +348,7 @@ function LiveFeed({ events }: { events: { type: string; message: string; timesta
 function colorFor(type: string): string {
   const m: Record<string, string> = {
     error: '#EF4444', done: '#10B981', complete: '#10B981', file_done: '#22D3EE',
-    coordinator: '#6366F1', planner: '#8B5CF6', builder: '#22D3EE',
+    coordinator: '#8A93A6', planner: '#7C9CFF', builder: '#5BD4EE',
     critic: '#F59E0B', fixer: '#10B981', context: '#A78BFA', agent: '#818CF8'
   };
   return m[type] || 'var(--text-primary)';
@@ -382,7 +383,7 @@ function FeedbackFormModal({ onClose, onSaved }: { onClose: () => void; onSaved:
         padding: 24, width: 'min(520px, 100%)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>📝 Submit Feedback</div>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>Submit Feedback</div>
           <button onClick={onClose} style={{ ...ghostBtn, padding: '4px 10px' }}>✕</button>
         </div>
         <div style={{ display: 'grid', gap: 12 }}>
@@ -437,8 +438,8 @@ function Select({ label, value, onChange, options }: { label: string; value: str
 
 const labelStyle: React.CSSProperties = { display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.4 };
 const inputStyle: React.CSSProperties = { width: '100%', padding: '9px 12px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 13, outline: 'none' };
-const primaryBtn: React.CSSProperties = { padding: '9px 16px', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff', border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+const primaryBtn: React.CSSProperties = { padding: '9px 16px', background: 'var(--accent)', color: '#062018', border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer' };
 const ghostBtn: React.CSSProperties = { padding: '9px 14px', background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer' };
-const fixBtn: React.CSSProperties = { padding: '10px 14px', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff', border: 'none', borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: 'pointer' };
-const approveBtn: React.CSSProperties = { padding: '10px 14px', background: 'rgba(16,185,129,0.15)', color: '#10B981', border: '1px solid rgba(16,185,129,0.5)', borderRadius: 9, fontWeight: 700, fontSize: 13, cursor: 'pointer' };
-const rejectBtn: React.CSSProperties = { padding: '8px 14px', background: 'transparent', color: '#EF4444', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 9, fontWeight: 600, fontSize: 12.5, cursor: 'pointer' };
+const fixBtn: React.CSSProperties = { padding: '10px 14px', background: 'var(--accent)', color: '#062018', border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+const approveBtn: React.CSSProperties = { padding: '10px 14px', background: 'rgba(52,211,166,0.15)', color: '#34D3A6', border: '1px solid rgba(52,211,166,0.5)', borderRadius: 9, fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+const rejectBtn: React.CSSProperties = { padding: '8px 14px', background: 'transparent', color: '#F26D6D', border: '1px solid rgba(242,109,109,0.4)', borderRadius: 9, fontWeight: 600, fontSize: 12.5, cursor: 'pointer' };

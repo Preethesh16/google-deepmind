@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { Socket } from 'socket.io';
 import * as fs from 'fs';
 import * as path from 'path';
-import { repairDefaultExports } from './projectRepair';
+import { repairDefaultExports, ensureRouterContext } from './projectRepair';
 
 // Initialize Google GenAI client
 const genai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || '' });
@@ -498,6 +498,18 @@ function runCriticAgent(
       agentLog(socket, buildId, 'Critic', `🔧 Auto-fixed cross-agent export mismatch: added default export to ${fixedExports.join(', ')}.`);
     } else {
       agentLog(socket, buildId, 'Critic', '✓ Tool: default import/export consistency check passed.');
+    }
+  } catch { /* non-fatal */ }
+
+  // Tool 7: ensure a <Router> context exists when components use react-router
+  // (useNavigate/<Link>) but no BrowserRouter/HashRouter is rendered. Wraps
+  // <App /> in a HashRouter to prevent the runtime "useNavigate() may be used
+  // only in the context of a <Router>" crash.
+  try {
+    const routerFixed = ensureRouterContext(projectPath);
+    if (routerFixed.length > 0) {
+      for (const f of routerFixed) if (!filesCreated.includes(f)) filesCreated.push(f);
+      agentLog(socket, buildId, 'Critic', `🔧 Wrapped app in <HashRouter> for react-router context: ${routerFixed.join(', ')}.`);
     }
   } catch { /* non-fatal */ }
 

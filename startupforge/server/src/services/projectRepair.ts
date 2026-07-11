@@ -132,3 +132,72 @@ export function repairDefaultExports(projectPath: string): string[] {
 
   return fixed;
 }
+
+/**
+ * ensureRouterContext()
+ * ------------------------------------------------------------------
+ * Parallel builders frequently disagree on routing: one agent writes a Navbar
+ * or Footer that uses react-router (`useNavigate`, `useLocation`, `<Link>`),
+ * while the agent that authored App.tsx wires up its own custom router (or none
+ * at all) and never renders a `<BrowserRouter>`. At runtime this throws:
+ *   "useNavigate() may be used only in the context of a <Router> component."
+ *   "Cannot destructure property 'basename' of 'React.useContext(...)' as null"
+ * and blanks the page.
+ *
+ * If any file uses react-router primitives but NO Router is rendered anywhere,
+ * this wraps `<App />` in the entry file with a <HashRouter>. HashRouter is
+ * chosen deliberately: it coexists with app-level `window.location.hash`
+ * routers (same `#/path` format) and is the safest option for static/GitHub
+ * Pages hosting. Returns the list of files it changed.
+ */
+export function ensureRouterContext(projectPath: string): string[] {
+  const srcDir = path.join(projectPath, 'src');
+  const files = walkSourceFiles(srcDir);
+  if (files.length === 0) return [];
+
+  const HOOK_RE = /\b(useNavigate|useLocation|useParams|useSearchParams|useRoutes|useMatch|Link|NavLink|Routes|Route|Navigate|Outlet)\b/;
+  const ROUTER_RENDER_RE = /<(BrowserRouter|HashRouter|MemoryRouter|Router)[\s/>]|create(Browser|Hash|Memory)Router|RouterProvider/;
+
+  let usesRouter = false;
+  let hasRouterContext = false;
+
+  for (const file of files) {
+    let content: string;
+    try { content = fs.readFileSync(file, 'utf-8'); } catch { continue; }
+    if (/from\s+['"]react-router-dom['"]/.test(content) && HOOK_RE.test(content)) usesRouter = true;
+    if (ROUTER_RENDER_RE.test(content)) hasRouterContext = true;
+  }
+
+  // Router primitives are unused, or a Router is already rendered — nothing to do.
+  if (!usesRouter || hasRouterContext) return [];
+
+  // Locate the entry file that renders <App />.
+  const entryCandidates = ['main.tsx', 'main.jsx', 'main.ts', 'index.tsx', 'index.jsx']
+    .map((f) => path.join(srcDir, f));
+  const entry = entryCandidates.find((f) => {
+    if (!fs.existsSync(f)) return false;
+    const c = fs.readFileSync(f, 'utf-8');
+    return /<App(\s[^>]*)?\/>|<App(\s[^>]*)?>/.test(c);
+  });
+  if (!entry) return [];
+
+  let content = fs.readFileSync(entry, 'utf-8');
+  const original = content;
+
+  // Wrap the <App /> element (self-closing or with props) in <HashRouter>.
+  content = content.replace(/(<App(?:\s[^>]*?)?\/>)/, '<HashRouter>$1</HashRouter>');
+  if (content === original) return []; // couldn't locate a wrappable <App />
+
+  // Add the HashRouter import if it isn't already present.
+  if (!/import\s+\{[^}]*\bHashRouter\b[^}]*\}\s+from\s+['"]react-router-dom['"]/.test(content)) {
+    const importLine = `import { HashRouter } from 'react-router-dom';\n`;
+    const firstImport = content.match(/^import[^\n]*\n/m);
+    content = firstImport
+      ? content.replace(firstImport[0], firstImport[0] + importLine)
+      : importLine + content;
+  }
+
+  fs.writeFileSync(entry, content, 'utf-8');
+  return [path.relative(projectPath, entry).replace(/\\/g, '/')];
+}
+

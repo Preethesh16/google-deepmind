@@ -1,15 +1,20 @@
 /**
- * Animated "Generating" loader — rotating conic glow ring with staggered
- * letter animation. Shown while the agent team is actively building.
+ * Processing indicator — a restrained conic halo with a pulsing core.
+ * Reads as an engineering "working" state rather than a decorative spinner.
  */
-export default function GeneratingLoader({ label = 'Generating' }: { label?: string }) {
-  const letters = label.split('');
+export default function GeneratingLoader({ label = 'Processing' }: { label?: string }) {
   return (
-    <div className="gen-loader-wrapper">
-      {letters.map((ch, i) => (
-        <span key={i} className="gen-loader-letter">{ch === ' ' ? '\u00A0' : ch}</span>
-      ))}
-      <div className="gen-loader" />
+    <div className="halo">
+      <div style={{
+        width: 62, height: 62, borderRadius: '50%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'var(--bg-2)', border: '1px solid var(--line)',
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em',
+          textTransform: 'uppercase', color: 'var(--accent)',
+        }} className="shimmer">{label}</span>
+      </div>
     </div>
   );
 }

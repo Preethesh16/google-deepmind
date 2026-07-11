@@ -40,7 +40,12 @@
   /* legacy aliases kept so any un-migrated class still resolves */
   --bg-deep: var(--bg);
   --bg-card: var(--bg-1);
+  --bg-surface: var(--bg-2);
+  --border: var(--line);
   --accent-indigo: var(--accent);
+  --accent-violet: var(--c-plan);
+  --accent-cyan: var(--c-build);
+  --accent-green: var(--accent);
   --text-primary: var(--text);
   --text-muted: var(--text-2);
 }

@@ -34,7 +34,7 @@ export function useSocket() {
     socket.on('build:id', ({ buildId }) => { setBuildId(buildId); });
     socket.on('gemma:start', ({ message }) => addEvent('context', message));
     socket.on('gemma:progress', ({ chars }) =>
-      addEvent('context', `📋 Compiling context... ${chars} chars`));
+      addEvent('context', `Compiling context — ${chars} chars`));
     socket.on('gemma:complete', ({ message, contextLength }) =>
       addEvent('context', `${message} (${contextLength} chars)`));
     socket.on('agent:log', ({ agent, message }) => {
@@ -55,9 +55,9 @@ export function useSocket() {
       }
     });
     socket.on('antigravity:file_start', ({ path, agent }) =>
-      addEvent('file_start', `📝 ${agent ? `[${agent}] ` : ''}Creating: ${path}`));
+      addEvent('file_start', `${agent ? `[${agent}] ` : ''}Creating ${path}`));
     socket.on('antigravity:file_written', ({ path, lines, agent }) => {
-      addEvent('file_done', `✅ ${agent ? `[${agent}] ` : ''}Written: ${path} (${lines} lines)`);
+      addEvent('file_done', `${agent ? `[${agent}] ` : ''}Wrote ${path} · ${lines} lines`);
       setFilesCreated([...filesRef.current, path]);
     });
     socket.on('antigravity:complete', ({ filesCreated: files, message }) => {
@@ -66,7 +66,7 @@ export function useSocket() {
       setIsBuilding(false);
     });
     socket.on('antigravity:error', ({ message }) => {
-      addEvent('error', `❌ Error: ${message}`);
+      addEvent('error', `Error: ${message}`);
       setIsBuilding(false);
     });
     socket.on('deploy:start', ({ message }) => addEvent('deploy', message));
@@ -82,7 +82,7 @@ export function useSocket() {
       setIsBuilding(false);
     });
     socket.on('build:error', ({ message }) => {
-      addEvent('error', `❌ ${message}`);
+      addEvent('error', message);
       setIsBuilding(false);
     });
 
@@ -96,15 +96,15 @@ export function useSocket() {
     socket.on('feedback:fix_started', ({ feedbackId }) => {
       useFeedbackStore.getState().setActiveFixId(feedbackId);
       setIsBuilding(true);
-      addEvent('agent', `🔧 Starting autonomous fix for request #${feedbackId}...`);
+      addEvent('agent', `Starting autonomous fix for request #${feedbackId}`);
     });
     socket.on('feedback:fix_complete', ({ feedbackId, filesChanged }) => {
-      addEvent('done', `✅ Fix ready for review — request #${feedbackId} (${filesChanged?.length || 0} file(s)). Awaiting admin approval.`);
+      addEvent('done', `Fix ready for review — request #${feedbackId} (${filesChanged?.length || 0} file(s)). Awaiting approval.`);
       setIsBuilding(false);
       useFeedbackStore.getState().setActiveFixId(null);
     });
     socket.on('feedback:error', ({ feedbackId, message }) => {
-      addEvent('error', `❌ Fix failed for request #${feedbackId}: ${message}`);
+      addEvent('error', `Fix failed for request #${feedbackId}: ${message}`);
       setIsBuilding(false);
       useFeedbackStore.getState().setActiveFixId(null);
     });
@@ -113,7 +113,7 @@ export function useSocket() {
     socket.on('github:start', ({ message }) => addEvent('github', message));
     socket.on('github:progress', ({ message }) => addEvent('github', message));
     socket.on('github:complete', ({ message }) => addEvent('github', message));
-    socket.on('github:error', ({ message }) => addEvent('error', `❌ GitHub: ${message}`));
+    socket.on('github:error', ({ message }) => addEvent('error', `GitHub: ${message}`));
 
     return () => {
       socket.removeAllListeners();

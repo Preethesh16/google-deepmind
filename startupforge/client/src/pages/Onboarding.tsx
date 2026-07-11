@@ -1,17 +1,23 @@
-import { useState } from 'react';
+import { useState, type ComponentType, type SVGProps } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBusinessStore } from '../stores/useBusinessStore';
+import {
+  IconLogo, IconBuilding, IconBulb, IconUsers, IconZap, IconLayers,
+  IconArrowRight, IconArrowLeft, IconPlus, IconTrash, IconCheck, IconLock, IconRocket,
+} from '../components/Icons';
 import axios from 'axios';
+
+type IconType = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
 
 const SERVER = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
 // Multi-step wizard steps
-const STEPS = [
-  { id: 1, label: 'Identity', icon: '🏢' },
-  { id: 2, label: 'Problem', icon: '💡' },
-  { id: 3, label: 'Team', icon: '👥' },
-  { id: 4, label: 'Features', icon: '⚡' },
-  { id: 5, label: 'Tech Stack', icon: '🛠️' },
+const STEPS: { id: number; label: string; Icon: IconType }[] = [
+  { id: 1, label: 'Identity', Icon: IconBuilding },
+  { id: 2, label: 'Problem', Icon: IconBulb },
+  { id: 3, label: 'Team', Icon: IconUsers },
+  { id: 4, label: 'Features', Icon: IconZap },
+  { id: 5, label: 'Tech Stack', Icon: IconLayers },
 ];
 
 export default function Onboarding() {
@@ -50,41 +56,52 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060B18] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative" style={{ background: 'var(--bg)' }}>
+      <div className="ambient" />
+      <div className="grid-bg absolute inset-0 opacity-40" />
+
       {/* Header */}
-      <div className="mb-10 text-center">
-        <h1 className="text-4xl font-bold gradient-text mb-2">StartupForge</h1>
-        <p className="text-[#6B7FA3] text-sm">
-          Powered by Gemma + Antigravity
+      <div className="mb-9 text-center relative">
+        <div className="flex items-center justify-center gap-2.5 mb-3">
+          <span style={{ color: 'var(--accent)' }}><IconLogo size={26} /></span>
+          <h1 className="text-[26px] font-semibold tracking-tight title-grad">StartupForge</h1>
+        </div>
+        <p className="text-[13px] mono" style={{ color: 'var(--text-3)' }}>
+          autonomous multi-agent build system
         </p>
       </div>
 
       {/* Step indicators */}
-      <div className="flex items-center gap-2 mb-8">
-        {STEPS.map((step, i) => (
-          <div key={step.id} className="flex items-center gap-2">
-            <button
-              onClick={() => currentStep > step.id && setStep(step.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                step.id === currentStep
-                  ? 'bg-[#6366F1] text-white'
-                  : step.id < currentStep
-                  ? 'bg-[#6366F1]/20 text-[#6366F1] cursor-pointer hover:bg-[#6366F1]/30'
-                  : 'bg-[#0D1526] text-[#6B7FA3] cursor-not-allowed'
-              }`}
-            >
-              <span>{step.icon}</span>
-              <span>{step.label}</span>
-            </button>
-            {i < STEPS.length - 1 && (
-              <div className={`w-8 h-px ${step.id < currentStep ? 'bg-[#6366F1]' : 'bg-[#1A2540]'}`} />
-            )}
-          </div>
-        ))}
+      <div className="flex items-center gap-2 mb-8 relative">
+        {STEPS.map((step, i) => {
+          const active = step.id === currentStep;
+          const past = step.id < currentStep;
+          const { Icon } = step;
+          return (
+            <div key={step.id} className="flex items-center gap-2">
+              <button
+                onClick={() => currentStep > step.id && setStep(step.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all"
+                style={{
+                  background: active ? 'var(--accent-glow)' : past ? 'var(--bg-2)' : 'transparent',
+                  border: `1px solid ${active ? 'var(--accent-dim)' : 'var(--line)'}`,
+                  color: active ? 'var(--accent)' : past ? 'var(--text-1)' : 'var(--text-3)',
+                  cursor: past ? 'pointer' : active ? 'default' : 'not-allowed',
+                }}
+              >
+                {past ? <IconCheck size={13} /> : <Icon size={13} />}
+                <span>{step.label}</span>
+              </button>
+              {i < STEPS.length - 1 && (
+                <div className="w-7 h-px" style={{ background: step.id < currentStep ? 'var(--accent-dim)' : 'var(--line-strong)' }} />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Form Card */}
-      <div className="w-full max-w-2xl bg-[#0D1526] rounded-2xl p-8 card-glow border border-[rgba(99,102,241,0.2)]">
+      <div className="w-full max-w-2xl panel p-7 relative fade-up" style={{ background: 'var(--bg-1)' }}>
         {currentStep === 1 && <StepIdentity />}
         {currentStep === 2 && <StepProblem />}
         {currentStep === 3 && <StepTeam />}
@@ -94,20 +111,14 @@ export default function Onboarding() {
         {/* Navigation */}
         <div className="flex justify-between mt-8">
           {currentStep > 1 && (
-            <button
-              onClick={() => setStep(currentStep - 1)}
-              className="px-6 py-2.5 rounded-xl border border-[rgba(99,102,241,0.3)] text-[#6B7FA3] hover:text-white hover:border-[#6366F1] transition-all text-sm"
-            >
-              ← Back
+            <button onClick={() => setStep(currentStep - 1)} className="btn btn-outline">
+              <IconArrowLeft size={14} /> Back
             </button>
           )}
           <div className="ml-auto">
             {currentStep < 5 && (
-              <button
-                onClick={() => setStep(currentStep + 1)}
-                className="px-6 py-2.5 rounded-xl bg-[#6366F1] hover:bg-[#5558E8] text-white font-medium text-sm transition-all"
-              >
-                Continue →
+              <button onClick={() => setStep(currentStep + 1)} className="btn btn-primary">
+                Continue <IconArrowRight size={14} />
               </button>
             )}
           </div>
@@ -127,9 +138,9 @@ function StepIdentity() {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-white mb-1">Business Identity</h2>
-      <p className="text-[#6B7FA3] text-sm mb-6">
-        This is stored locally by Gemma — your data never leaves your machine.
+      <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>Business Identity</h2>
+      <p className="text-[13px] mb-6" style={{ color: 'var(--text-2)' }}>
+        Stored locally on your machine — this data never leaves your environment.
       </p>
 
       <div className="grid grid-cols-2 gap-4">
@@ -162,9 +173,9 @@ function StepProblem() {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-white mb-1">Problem & Solution</h2>
-      <p className="text-[#6B7FA3] text-sm mb-6">
-        Gemma uses this to understand what your MVP should solve.
+      <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>Problem &amp; Solution</h2>
+      <p className="text-[13px] mb-6" style={{ color: 'var(--text-2)' }}>
+        The agents use this to understand exactly what your MVP should solve.
       </p>
 
       <FormTextarea label="Problem Statement *" rows={3}
@@ -209,19 +220,17 @@ function StepTeam() {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-white mb-1">Your Team</h2>
-      <p className="text-[#6B7FA3] text-sm mb-4">
-        Team skills help Gemma pick the right tech stack for your MVP.
+      <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>Your Team</h2>
+      <p className="text-[13px] mb-4" style={{ color: 'var(--text-2)' }}>
+        Team skills help the planner pick the right tech stack for your MVP.
       </p>
 
       {team.map((member, i) => (
-        <div key={i} className="bg-[#141E35] rounded-xl p-4 space-y-3 border border-[rgba(99,102,241,0.15)]">
+        <div key={i} className="panel-2 p-4 space-y-3">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs text-[#6B7FA3] font-medium uppercase tracking-wider">
-              Member {i + 1}
-            </span>
-            <button onClick={() => removeMember(i)} className="text-red-400 hover:text-red-300 text-xs">
-              Remove
+            <span className="eyebrow">Member {i + 1}</span>
+            <button onClick={() => removeMember(i)} className="flex items-center gap-1 text-[12px]" style={{ color: 'var(--c-error)' }}>
+              <IconTrash size={13} /> Remove
             </button>
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -234,7 +243,7 @@ function StepTeam() {
               onChange={(e: any) => updateMember(i, 'equity', Number(e.target.value))} />
           </div>
           <div>
-            <label className="text-xs text-[#6B7FA3] font-medium mb-2 block">Skills</label>
+            <label className="label">Skills</label>
             <div className="flex flex-wrap gap-2">
               {SKILL_OPTIONS.map(skill => (
                 <button key={skill}
@@ -244,11 +253,7 @@ function StepTeam() {
                       : [...member.skills, skill];
                     updateMember(i, 'skills', skills);
                   }}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                    member.skills.includes(skill)
-                      ? 'bg-[#6366F1] text-white'
-                      : 'bg-[#0D1526] text-[#6B7FA3] hover:text-white hover:bg-[#1A2540]'
-                  }`}
+                  className={member.skills.includes(skill) ? 'chip chip-on' : 'chip'}
                 >
                   {skill}
                 </button>
@@ -258,9 +263,8 @@ function StepTeam() {
         </div>
       ))}
 
-      <button onClick={addMember}
-        className="w-full py-2.5 rounded-xl border border-dashed border-[rgba(99,102,241,0.3)] text-[#6B7FA3] hover:border-[#6366F1] hover:text-[#6366F1] transition-all text-sm">
-        + Add Team Member
+      <button onClick={addMember} className="btn btn-outline w-full" style={{ borderStyle: 'dashed' }}>
+        <IconPlus size={14} /> Add Team Member
       </button>
     </div>
   );
@@ -282,13 +286,13 @@ function StepFeatures() {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-white mb-1">MVP Features</h2>
-      <p className="text-[#6B7FA3] text-sm mb-4">
-        Antigravity will build all ✅ MVP features. Mark the rest as Phase 2.
+      <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>MVP Features</h2>
+      <p className="text-[13px] mb-4" style={{ color: 'var(--text-2)' }}>
+        The builders ship every feature marked MVP. Mark the rest as Phase 2.
       </p>
 
       {features.map((feature, i) => (
-        <div key={i} className="bg-[#141E35] rounded-xl p-4 border border-[rgba(99,102,241,0.15)]">
+        <div key={i} className="panel-2 p-4">
           <div className="flex gap-3 mb-3">
             <div className="flex-1">
               <FormField label="Feature Name" placeholder="GST Auto-Filing"
@@ -297,15 +301,14 @@ function StepFeatures() {
             <div className="flex items-end gap-2 pb-0.5">
               <button
                 onClick={() => updateFeature(i, 'isMvp', !feature.isMvp)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                  feature.isMvp ? 'bg-[#10B981]/20 text-[#10B981]' : 'bg-[#0D1526] text-[#6B7FA3]'
-                }`}
+                className={feature.isMvp ? 'chip chip-on' : 'chip'}
+                style={{ padding: '8px 11px' }}
               >
-                {feature.isMvp ? '✅ MVP' : 'Phase 2'}
+                {feature.isMvp ? 'MVP' : 'Phase 2'}
               </button>
               <button onClick={() => setFeatures(features.filter((_, idx) => idx !== i))}
-                className="px-2 py-2 rounded-lg text-xs text-red-400 hover:bg-red-400/10 transition-all">
-                ✕
+                className="chip" style={{ padding: '8px 10px', color: 'var(--c-error)' }}>
+                <IconTrash size={13} />
               </button>
             </div>
           </div>
@@ -314,9 +317,8 @@ function StepFeatures() {
         </div>
       ))}
 
-      <button onClick={addFeature}
-        className="w-full py-2.5 rounded-xl border border-dashed border-[rgba(99,102,241,0.3)] text-[#6B7FA3] hover:border-[#6366F1] hover:text-[#6366F1] transition-all text-sm">
-        + Add Feature
+      <button onClick={addFeature} className="btn btn-outline w-full" style={{ borderStyle: 'dashed' }}>
+        <IconPlus size={14} /> Add Feature
       </button>
     </div>
   );
@@ -334,9 +336,9 @@ function StepTech({ onComplete, saving }: { onComplete: () => void; saving: bool
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-white mb-1">Tech Stack & Design</h2>
-      <p className="text-[#6B7FA3] text-sm mb-4">
-        Gemma will validate this and suggest improvements before building.
+      <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>Tech Stack &amp; Design</h2>
+      <p className="text-[13px] mb-4" style={{ color: 'var(--text-2)' }}>
+        The planner validates these choices and suggests improvements before building.
       </p>
 
       <div className="grid grid-cols-2 gap-4">
@@ -351,7 +353,7 @@ function StepTech({ onComplete, saving }: { onComplete: () => void; saving: bool
 
       {/* Brand Colors */}
       <div>
-        <label className="text-xs text-[#6B7FA3] font-medium mb-2 block">Brand Colors</label>
+        <label className="label">Brand Colors</label>
         <div className="flex gap-3">
           {colors.map((color, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -361,9 +363,10 @@ function StepTech({ onComplete, saving }: { onComplete: () => void; saving: bool
                   updated[i] = e.target.value;
                   setProfile({ brandColors: updated });
                 }}
-                className="w-10 h-10 rounded-lg cursor-pointer border border-[rgba(99,102,241,0.3)] bg-transparent"
+                className="w-9 h-9 rounded-lg cursor-pointer bg-transparent"
+                style={{ border: '1px solid var(--line-strong)' }}
               />
-              <span className="text-xs text-[#6B7FA3] font-mono">{color}</span>
+              <span className="text-[12px] mono" style={{ color: 'var(--text-2)' }}>{color}</span>
             </div>
           ))}
         </div>
@@ -371,34 +374,37 @@ function StepTech({ onComplete, saving }: { onComplete: () => void; saving: bool
 
       {/* Existing Repo */}
       <div>
-        <label className="text-xs text-[#6B7FA3] font-medium mb-2 block">Existing GitHub Repo (optional)</label>
-        <div className="flex gap-3 items-center">
+        <label className="label">Existing GitHub Repo (optional)</label>
+        <div className="flex gap-2.5 items-center">
           <input
             type="checkbox"
             checked={profile.hasExistingCode || false}
             onChange={(e) => setProfile({ hasExistingCode: e.target.checked })}
-            className="accent-[#6366F1]"
+            style={{ accentColor: 'var(--accent)' }}
           />
-          <span className="text-sm text-[#6B7FA3]">I have existing code</span>
+          <span className="text-[13px]" style={{ color: 'var(--text-2)' }}>I have existing code</span>
         </div>
         {profile.hasExistingCode && (
-          <FormField label="GitHub URL" placeholder="https://github.com/yourname/your-repo"
-            {...field('githubRepoUrl')} />
+          <div className="mt-3">
+            <FormField label="GitHub URL" placeholder="https://github.com/yourname/your-repo"
+              {...field('githubRepoUrl')} />
+          </div>
         )}
       </div>
 
       {/* Final submit */}
-      <div className="pt-4 border-t border-[rgba(99,102,241,0.15)]">
-        <p className="text-xs text-[#6B7FA3] mb-4 flex items-center gap-2">
-          <span className="text-green-400">🔒</span>
-          All data stored locally by Gemma. Nothing is sent to the cloud until you build.
+      <div className="pt-4" style={{ borderTop: '1px solid var(--line)' }}>
+        <p className="text-[12px] mb-4 flex items-center gap-2" style={{ color: 'var(--text-2)' }}>
+          <span style={{ color: 'var(--accent)' }}><IconLock size={13} /></span>
+          Your profile is stored locally. Nothing is sent to the cloud until you build.
         </p>
         <button
           onClick={onComplete}
           disabled={saving}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-semibold text-base hover:opacity-90 transition-all disabled:opacity-50"
+          className="btn btn-primary w-full"
+          style={{ padding: '13px', fontSize: 14 }}
         >
-          {saving ? '💾 Saving to Gemma...' : '🚀 Launch StartupForge Dashboard →'}
+          {saving ? 'Saving profile…' : <>Launch Dashboard <IconRocket size={16} /></>}
         </button>
       </div>
     </div>
@@ -409,14 +415,8 @@ function StepTech({ onComplete, saving }: { onComplete: () => void; saving: bool
 function FormField({ label, placeholder, value, onChange }: any) {
   return (
     <div>
-      <label className="text-xs text-[#6B7FA3] font-medium mb-1.5 block">{label}</label>
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className="w-full bg-[#060B18] border border-[rgba(99,102,241,0.2)] rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#3A4F72] focus:outline-none focus:border-[#6366F1] transition-colors"
-      />
+      <label className="label">{label}</label>
+      <input type="text" placeholder={placeholder} value={value} onChange={onChange} className="field" />
     </div>
   );
 }
@@ -424,14 +424,8 @@ function FormField({ label, placeholder, value, onChange }: any) {
 function FormTextarea({ label, placeholder, value, onChange, rows = 3 }: any) {
   return (
     <div>
-      <label className="text-xs text-[#6B7FA3] font-medium mb-1.5 block">{label}</label>
-      <textarea
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        rows={rows}
-        className="w-full bg-[#060B18] border border-[rgba(99,102,241,0.2)] rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#3A4F72] focus:outline-none focus:border-[#6366F1] transition-colors resize-none"
-      />
+      <label className="label">{label}</label>
+      <textarea placeholder={placeholder} value={value} onChange={onChange} rows={rows} className="field resize-none" />
     </div>
   );
 }
@@ -439,12 +433,8 @@ function FormTextarea({ label, placeholder, value, onChange, rows = 3 }: any) {
 function FormSelect({ label, options, value, onChange }: any) {
   return (
     <div>
-      <label className="text-xs text-[#6B7FA3] font-medium mb-1.5 block">{label}</label>
-      <select
-        value={value}
-        onChange={onChange}
-        className="w-full bg-[#060B18] border border-[rgba(99,102,241,0.2)] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#6366F1] transition-colors"
-      >
+      <label className="label">{label}</label>
+      <select value={value} onChange={onChange} className="field">
         <option value="">Select...</option>
         {options.map((opt: string) => (
           <option key={opt} value={opt}>{opt}</option>
