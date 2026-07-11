@@ -66,6 +66,10 @@ if "%HAS_OLLAMA%"=="1" (
 )
 
 echo.
+echo ---- Freeing ports 3001 (server) and 5173 (client) if already in use ----
+powershell -NoProfile -Command "Get-NetTCPConnection -LocalPort 3001,5173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -ErrorAction Stop; Write-Host ('Killed stale process on port: ' + $_) } catch {} }"
+
+echo.
 echo ---- Launching services ----
 
 REM Start Ollama in its own window (harmless if already running)

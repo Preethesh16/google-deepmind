@@ -63,6 +63,7 @@ interface BusinessState {
   filesCreated: string[];
   deployUrl: string;
   isBuilding: boolean;
+  activeProjectPath: string;
   setBusinessId: (id: number) => void;
   setProfile: (profile: Partial<BusinessProfile>) => void;
   setTeam: (team: TeamMember[]) => void;
@@ -74,6 +75,7 @@ interface BusinessState {
   setDeployUrl: (url: string) => void;
   setIsBuilding: (v: boolean) => void;
   setBuildId: (id: number) => void;
+  setActiveProjectPath: (path: string) => void;
   reset: () => void;
 }
 
@@ -91,6 +93,7 @@ export const useBusinessStore = create<BusinessState>()(
       filesCreated: [],
       deployUrl: '',
       isBuilding: false,
+      activeProjectPath: '',
       setBusinessId: (id) => set({ businessId: id }),
       setProfile: (profile) => set((s) => ({ profile: { ...s.profile, ...profile } })),
       setTeam: (team) => set({ team }),
@@ -104,10 +107,11 @@ export const useBusinessStore = create<BusinessState>()(
       setDeployUrl: (url) => set({ deployUrl: url }),
       setIsBuilding: (v) => set({ isBuilding: v }),
       setBuildId: (id) => set({ currentBuildId: id }),
+      setActiveProjectPath: (path) => set({ activeProjectPath: path }),
       reset: () => set({
         businessId: null, profile: {}, team: [], features: [],
         currentStep: 1, compiledContext: '', buildEvents: [],
-        filesCreated: [], deployUrl: '', isBuilding: false
+        filesCreated: [], deployUrl: '', isBuilding: false, activeProjectPath: ''
       })
     }),
     {
@@ -117,7 +121,8 @@ export const useBusinessStore = create<BusinessState>()(
         profile: s.profile,
         team: s.team,
         features: s.features,
-        currentStep: s.currentStep
+        currentStep: s.currentStep,
+        activeProjectPath: s.activeProjectPath
       })
     }
   )

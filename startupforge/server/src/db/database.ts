@@ -82,7 +82,50 @@ db.exec(`
     created_at   TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (business_id) REFERENCES business_profiles(id) ON DELETE CASCADE
   );
+
+  -- User feedback collected from an Excel sheet (e.g. a Google Form export)
+  -- and turned into autonomous fix requests.
+  CREATE TABLE IF NOT EXISTS feedback (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    external_id   TEXT DEFAULT '',        -- stable key from the source row (dedupe)
+    source        TEXT DEFAULT 'excel',   -- excel | form | manual
+    user_name     TEXT DEFAULT '',
+    email         TEXT DEFAULT '',
+    project_path  TEXT DEFAULT '',
+    category      TEXT DEFAULT 'bug',     -- bug | error | feature | ux | performance | other
+    message       TEXT NOT NULL,
+    priority      TEXT DEFAULT 'medium',  -- high | medium | low
+    urgency       TEXT DEFAULT 'normal',  -- critical | high | normal | low
+    score         INTEGER DEFAULT 0,      -- computed priority*urgency ranking
+    status        TEXT DEFAULT 'open',    -- open | fixing | pending_approval | completed | rejected
+    build_id      INTEGER,
+    files_changed TEXT DEFAULT '[]',
+    fix_summary   TEXT DEFAULT '',
+    created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+    fixed_at      TEXT DEFAULT '',
+    approved_at   TEXT DEFAULT ''
+  );
+
+  -- Single connected GitHub account (this is a local, single-admin tool).
+  -- Populated either via OAuth login or a pasted Personal Access Token.
+  CREATE TABLE IF NOT EXISTS github_accounts (
+    id            INTEGER PRIMARY KEY CHECK (id = 1),
+    username      TEXT DEFAULT '',
+    avatar_url    TEXT DEFAULT '',
+    access_token  TEXT DEFAULT '',
+    connected_at  TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
+
+// ─── MIGRATIONS (best-effort ALTER TABLE for columns added after initial release) ──
+function tryAddColumn(table: string, columnDef: string) {
+  try {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${columnDef}`);
+  } catch {
+    // Already exists — ignore.
+  }
+}
+tryAddColumn('mvp_builds', "github_pages_url TEXT DEFAULT ''");
 
 // Helper functions
 export function getBusinessProfile(id: number) {
@@ -103,4 +146,68 @@ export function getUserPersonas(businessId: number) {
 
 export function getLatestBuild(businessId: number) {
   return db.prepare('SELECT * FROM mvp_builds WHERE business_id = ? ORDER BY created_at DESC LIMIT 1').get(businessId);
+}
+
+// ─── FEEDBACK HELPERS ──────────────────────────────────────────────────────
+
+export function listFeedback() {
+  // Rank: active work first, then by computed score (priority x urgency), newest first.
+  return db.prepare(`
+    SELECT * FROM feedback
+    ORDER BY
+      CASE status
+        WHEN 'fixing' THEN 0
+        WHEN 'pending_approval' THEN 1
+        WHEN 'open' THEN 2
+        WHEN 'completed' THEN 3
+        WHEN 'rejected' THEN 4
+        ELSE 5
+      END ASC,
+      score DESC,
+      datetime(created_at) DESC
+  `).all();
+}
+
+export function getFeedback(id: number) {
+  return db.prepare('SELECT * FROM feedback WHERE id = ?').get(id);
+}
+
+// ─── GITHUB ACCOUNT HELPERS ─────────────────────────────────────────────────
+
+export function getGithubAccount() {
+  return db.prepare('SELECT * FROM github_accounts WHERE id = 1').get();
+}
+
+export function saveGithubAccount(data: { username: string; avatarUrl: string; accessToken: string }) {
+  db.prepare(`
+    INSERT INTO github_accounts (id, username, avatar_url, access_token, connected_at)
+    VALUES (1, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(id) DO UPDATE SET
+      username = excluded.username,
+      avatar_url = excluded.avatar_url,
+      access_token = excluded.access_token,
+      connected_at = CURRENT_TIMESTAMP
+  `).run(data.username, data.avatarUrl, data.accessToken);
+}
+
+export function clearGithubAccount() {
+  db.prepare('DELETE FROM github_accounts WHERE id = 1').run();
+}
+
+// ─── PROJECT LIBRARY HELPERS ────────────────────────────────────────────────
+
+/** All generated MVPs (builds with an actual project folder), newest first. */
+export function listProjects() {
+  return db.prepare(`
+    SELECT
+      b.id AS build_id, b.business_id, b.status, b.project_path, b.deploy_url,
+      b.github_url, b.github_pages_url, b.files_created, b.command_used, b.created_at,
+      p.business_name, p.industry, p.stage
+    FROM mvp_builds b
+    JOIN business_profiles p ON p.id = b.business_id
+    WHERE b.id IN (
+      SELECT MAX(id) FROM mvp_builds WHERE project_path != '' GROUP BY project_path
+    )
+    ORDER BY b.created_at DESC
+  `).all();
 }

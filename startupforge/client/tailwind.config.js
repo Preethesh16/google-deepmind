@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
         brand: {
-          indigo: '#6366F1',
-          violet: '#8B5CF6',
-          cyan: '#22D3EE',
+          accent: '#34D3A6',
+          plan: '#7C9CFF',
+          build: '#5BD4EE',
         }
       }
     },
