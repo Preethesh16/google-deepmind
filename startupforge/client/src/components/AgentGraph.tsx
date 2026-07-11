@@ -57,48 +57,41 @@ export default function AgentGraph({ events, active }: { events: BuildEvent[]; a
     return 'idle';
   };
 
+  const statusColor = active ? 'var(--accent)' : isDone ? 'var(--accent)' : 'var(--text-3)';
+  const statusLabel = active ? 'RUNNING' : isDone ? `COMPLETE · ${fileCount} FILES` : 'IDLE';
+
   return (
-    <div className="ai-panel ai-grid-bg" style={{ padding: 0 }}>
+    <div className="panel dot-grid" style={{ padding: 0, overflow: 'hidden' }}>
       {/* Header */}
       <div style={{
-        position: 'relative', zIndex: 3,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 20px 6px'
+        padding: '15px 18px 8px', borderBottom: '1px solid var(--line)',
       }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.4, color: '#fff' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--text)' }}>
             MULTI-AGENT PIPELINE
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-            Antigravity autonomous orchestration
+          <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+            Autonomous orchestration · Antigravity
           </div>
         </div>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 7,
-          fontSize: 11, fontWeight: 700,
-          color: active ? '#c4b5fd' : isDone ? '#6ee7b7' : 'rgba(255,255,255,0.4)'
-        }}>
-          <span style={{
-            width: 8, height: 8, borderRadius: '50%',
-            background: active ? '#a67dff' : isDone ? '#10B981' : 'rgba(255,255,255,0.3)',
-            boxShadow: active ? '0 0 10px #a67dff' : 'none',
-            animation: active ? 'blink 1s step-end infinite' : 'none'
-          }} />
-          {active ? 'WORKING' : isDone ? `COMPLETE · ${fileCount} FILES` : 'IDLE'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10.5, fontWeight: 600, letterSpacing: '0.06em', color: statusColor, fontFamily: 'var(--font-mono)' }}>
+          <span className={active ? 'dot dot-live' : 'dot'} style={{ background: active ? 'var(--accent)' : isDone ? 'var(--accent)' : 'var(--text-3)' }} />
+          {statusLabel}
         </div>
       </div>
 
       {/* Graph */}
       <svg viewBox={`0 0 ${VW} ${VH}`} preserveAspectRatio="xMidYMid meet"
-        style={{ width: '100%', height: 'auto', position: 'relative', zIndex: 2, display: 'block' }}>
+        style={{ width: '100%', height: 'auto', display: 'block' }}>
         <defs>
           {AGENTS.map((a) => (
-            <marker key={a.key} id={`arrow-${a.key}`} viewBox="0 0 10 10" refX="8" refY="5"
+            <marker key={a.key} id={`ag-arrow-${a.key}`} viewBox="0 0 10 10" refX="8" refY="5"
               markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill={a.color} />
             </marker>
           ))}
-          <marker id="arrow-idle" viewBox="0 0 10 10" refX="8" refY="5"
+          <marker id="ag-arrow-idle" viewBox="0 0 10 10" refX="8" refY="5"
             markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,0.14)" />
           </marker>
@@ -107,25 +100,22 @@ export default function AgentGraph({ events, active }: { events: BuildEvent[]; a
         {/* Connectors */}
         {AGENTS.slice(0, -1).map((a, i) => {
           const next = AGENTS[i + 1];
-          const x1 = a.x + NODE / 2 + 3;
+          const x1 = a.x + NODE / 2 + 2;
           const x2 = next.x - NODE / 2 - 8;
           const d = `M ${x1} ${CY} L ${x2} ${CY}`;
           const nextPhase = phaseFor(next);
-          const flowing = active && (nextPhase === 'active' || (currentKey === a.key));
+          const flowing = active && (nextPhase === 'active' || currentKey === a.key);
           const doneSeg = seen.has(next.key) || isDone;
-          const color = flowing || doneSeg ? next.color : 'rgba(255,255,255,0.14)';
+          const color = flowing || doneSeg ? next.color : 'rgba(255,255,255,0.12)';
           return (
             <g key={a.key}>
-              <path d={d} fill="none" stroke={color} strokeWidth={2}
-                markerEnd={`url(#arrow-${flowing || doneSeg ? next.key : 'idle'})`}
-                opacity={flowing ? 0.35 : 1} />
+              <path d={d} fill="none" stroke={color} strokeWidth={1.6}
+                markerEnd={`url(#ag-arrow-${flowing || doneSeg ? next.key : 'idle'})`}
+                opacity={flowing ? 0.4 : 1} />
               {flowing && (
-                <motion.path
-                  d={d} fill="none" stroke={next.color} strokeWidth={2.5}
-                  strokeDasharray="6 9" strokeLinecap="round"
-                  animate={{ strokeDashoffset: [30, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.7, ease: 'linear' }}
-                />
+                <path d={d} fill="none" stroke={next.color} strokeWidth={2}
+                  strokeDasharray="5 8" strokeLinecap="round"
+                  style={{ animation: 'dash-flow 0.6s linear infinite' }} />
               )}
             </g>
           );
@@ -135,38 +125,35 @@ export default function AgentGraph({ events, active }: { events: BuildEvent[]; a
         {(() => {
           const b = AGENTS[2];
           const on = phaseFor(b) !== 'idle';
-          const dots = [{ dx: -30, dy: -46 }, { dx: 30, dy: -46 }, { dx: 0, dy: 50 }];
+          const dots = [{ dx: -30, dy: -48 }, { dx: 30, dy: -48 }, { dx: 0, dy: 52 }];
           return dots.map((p, i) => (
             <g key={`sat-${i}`}>
               <line x1={b.x} y1={CY} x2={b.x + p.dx} y2={CY + p.dy}
                 stroke={on ? b.color : 'rgba(255,255,255,0.1)'} strokeWidth={1} strokeDasharray="2 3" />
-              <motion.circle cx={b.x + p.dx} cy={CY + p.dy} r={4}
+              <motion.circle cx={b.x + p.dx} cy={CY + p.dy} r={3.5}
                 fill={on ? b.color : 'rgba(255,255,255,0.15)'}
-                animate={on ? { opacity: [0.4, 1, 0.4] } : { opacity: 0.3 }}
+                animate={on ? { opacity: [0.35, 1, 0.35] } : { opacity: 0.3 }}
                 transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }} />
             </g>
           ));
         })()}
 
         {/* Nodes */}
-        {AGENTS.map((a) => {
-          const phase = phaseFor(a);
-          return (
-            <foreignObject key={a.key} x={a.x - NODE / 2} y={CY - NODE / 2}
-              width={NODE} height={NODE} style={{ overflow: 'visible' }}>
-              <AgentNode agent={a} phase={phase} />
-            </foreignObject>
-          );
-        })}
+        {AGENTS.map((a) => (
+          <foreignObject key={a.key} x={a.x - NODE / 2} y={CY - NODE / 2}
+            width={NODE} height={NODE} style={{ overflow: 'visible' }}>
+            <AgentNode agent={a} phase={phaseFor(a)} />
+          </foreignObject>
+        ))}
       </svg>
 
-      {/* Footer legend */}
+      {/* Footer */}
       <div style={{
-        position: 'relative', zIndex: 3, padding: '2px 20px 16px',
-        textAlign: 'center', fontSize: 10.5, color: 'rgba(255,255,255,0.4)',
-        fontFamily: 'JetBrains Mono, monospace'
+        padding: '12px 18px 14px', textAlign: 'center',
+        fontSize: 10.5, color: 'var(--text-3)', fontFamily: 'var(--font-mono)',
+        borderTop: '1px solid var(--line)',
       }}>
-        Coordinator → Planner → Builders (parallel) → Critic → Fixer
+        coordinator → planner → builders (parallel) → critic → fixer
       </div>
     </div>
   );
@@ -175,34 +162,32 @@ export default function AgentGraph({ events, active }: { events: BuildEvent[]; a
 function AgentNode({ agent, phase }: { agent: AgentDef; phase: Phase }) {
   const isActive = phase === 'active';
   const isDone = phase === 'done';
-  const ring = isActive ? agent.color : isDone ? '#10B981' : 'rgba(255,255,255,0.12)';
+  const ring = isActive ? agent.color : isDone ? 'var(--accent-dim)' : 'rgba(255,255,255,0.12)';
+  const { Icon } = agent;
   return (
-    <div style={{
-      width: '100%', height: '100%',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3
-    }}>
-      <motion.div
-        animate={isActive ? { scale: [1, 1.08, 1], boxShadow: [`0 0 0 ${agent.color}00`, `0 0 22px ${agent.color}aa`, `0 0 0 ${agent.color}00`] } : {}}
-        transition={{ repeat: Infinity, duration: 1.4 }}
-        style={{
-          width: 42, height: 42, borderRadius: 13,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 19,
-          background: isActive
-            ? `linear-gradient(180deg, ${agent.color}dd, ${agent.color}55)`
-            : isDone ? 'linear-gradient(180deg, rgba(16,185,129,0.35), rgba(16,185,129,0.1))'
-            : 'linear-gradient(180deg, #2a2a35, #14141c)',
-          border: `2px solid ${ring}`,
-          boxShadow: isActive ? `inset 0 2px 6px rgba(255,255,255,0.3)` : 'inset 0 2px 6px rgba(255,255,255,0.06)',
-          opacity: phase === 'idle' ? 0.55 : 1
-        }}>
-        {isDone && !isActive ? '✅' : agent.icon}
-      </motion.div>
-      <div style={{
-        fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
-        color: isActive ? '#fff' : isDone ? '#6ee7b7' : 'rgba(255,255,255,0.7)'
-      }}>{agent.name}</div>
-      <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>{agent.role}</div>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+      <div style={{ position: 'relative', width: 44, height: 44 }}>
+        {isActive && (
+          <span className="pulse-ring" style={{ position: 'absolute', inset: 0, borderRadius: 12, border: `1.5px solid ${agent.color}` }} />
+        )}
+        <motion.div
+          animate={isActive ? { boxShadow: [`0 0 0 ${agent.color}00`, `0 0 18px ${agent.color}66`, `0 0 0 ${agent.color}00`] } : {}}
+          transition={{ repeat: Infinity, duration: 1.6 }}
+          style={{
+            width: 44, height: 44, borderRadius: 12,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: isActive ? `${agent.color}1f` : isDone ? 'rgba(52,211,166,0.10)' : 'var(--bg-2)',
+            border: `1.5px solid ${ring}`,
+            color: isActive ? agent.color : isDone ? 'var(--accent)' : 'var(--text-3)',
+            opacity: phase === 'idle' ? 0.7 : 1,
+          }}>
+          {isDone && !isActive ? <IconCheck size={20} /> : <Icon size={20} />}
+        </motion.div>
+      </div>
+      <div style={{ fontSize: 10.5, fontWeight: 600, whiteSpace: 'nowrap', color: isActive ? 'var(--text)' : isDone ? 'var(--text-1)' : 'var(--text-2)' }}>
+        {agent.name}
+      </div>
+      <div style={{ fontSize: 9, color: 'var(--text-3)', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }}>{agent.role}</div>
     </div>
   );
 }
