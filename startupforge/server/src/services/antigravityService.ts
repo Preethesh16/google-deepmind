@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { Socket } from 'socket.io';
 import * as fs from 'fs';
 import * as path from 'path';
-import { repairDefaultExports, ensureRouterContext } from './projectRepair';
+import { repairDefaultExports, repairNamedExports, ensureRouterContext, repairTailwindColors } from './projectRepair';
 
 // Initialize Google GenAI client
 const genai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || '' });
@@ -510,6 +510,28 @@ function runCriticAgent(
     if (routerFixed.length > 0) {
       for (const f of routerFixed) if (!filesCreated.includes(f)) filesCreated.push(f);
       agentLog(socket, buildId, 'Critic', `🔧 Wrapped app in <HashRouter> for react-router context: ${routerFixed.join(', ')}.`);
+    }
+  } catch { /* non-fatal */ }
+
+  // Tool 8: reconcile named-import vs default-export mismatches — the mirror
+  // image of Tool 6, e.g. App.tsx does `import { Navbar } from './Navbar'`
+  // but Navbar.tsx only has `export default function Navbar()` → Vite fails
+  // "No matching export ... for import 'Navbar'".
+  try {
+    const fixedNamed = repairNamedExports(projectPath);
+    if (fixedNamed.length > 0) {
+      for (const f of fixedNamed) if (!filesCreated.includes(f)) filesCreated.push(f);
+      agentLog(socket, buildId, 'Critic', `🔧 Auto-fixed cross-agent export mismatch: added named export to ${fixedNamed.join(', ')}.`);
+    }
+  } catch { /* non-fatal */ }
+
+  // Tool 9: fix CSS @apply rules referencing undeclared custom Tailwind color
+  // shades (e.g. `@apply bg-brand-darkBg` when tailwind.config only defines
+  // `brand.dark`) — a hard PostCSS build error at dev-server start.
+  try {
+    const fixedColors = repairTailwindColors(projectPath);
+    if (fixedColors.length > 0) {
+      agentLog(socket, buildId, 'Critic', `🔧 Added missing Tailwind color shade(s) referenced by @apply: ${fixedColors.join(', ')}.`);
     }
   } catch { /* non-fatal */ }
 

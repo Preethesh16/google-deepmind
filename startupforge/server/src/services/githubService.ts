@@ -15,7 +15,7 @@ import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Socket } from 'socket.io';
-import { repairDefaultExports, ensureRouterContext } from './projectRepair';
+import { repairDefaultExports, repairNamedExports, ensureRouterContext, repairTailwindColors } from './projectRepair';
 
 const execAsync = promisify(exec);
 
@@ -286,6 +286,18 @@ function autoRepairForBuild(projectPath: string, emit: (m: string) => void): voi
   try {
     const routerFixed = ensureRouterContext(projectPath);
     if (routerFixed.length > 0) emit(`🔧 Wrapped app in <HashRouter>: ${routerFixed.join(', ')}.`);
+  } catch { /* best-effort */ }
+
+  // named-import vs default-export mismatches (mirror image of the above)
+  try {
+    const fixedNamed = repairNamedExports(projectPath);
+    if (fixedNamed.length > 0) emit(`🔧 Added missing named export(s) to: ${fixedNamed.join(', ')}.`);
+  } catch { /* best-effort */ }
+
+  // CSS @apply rules referencing undeclared custom Tailwind color shades
+  try {
+    const fixedColors = repairTailwindColors(projectPath);
+    if (fixedColors.length > 0) emit(`🔧 Added missing Tailwind color shade(s): ${fixedColors.join(', ')}.`);
   } catch { /* best-effort */ }
 }
 

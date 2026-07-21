@@ -6,6 +6,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { registerCreative } from './creative.js';
+import { exec } from 'child_process';
 
 const __dirnameServer = dirname(fileURLToPath(import.meta.url));
 
@@ -226,6 +227,15 @@ app.post('/api/vault', (req, res) => {
   db.prepare("INSERT INTO local_secure_vault (id, key_type, encrypted_payload) VALUES (?, ?, ?)").run(
     id, keyType, encryptedPayload
   );
+  res.json({ success: true });
+});
+
+app.post('/api/launch-startupforge', (req, res) => {
+  exec('start "" "d:\\google deepmind\\startupforge\\start.bat"', { cwd: 'd:\\google deepmind\\startupforge' }, (error) => {
+    if (error) {
+      console.error(`Error launching StartupForge: ${error.message}`);
+    }
+  });
   res.json({ success: true });
 });
 

@@ -563,14 +563,26 @@ export default function App() {
   // request is logged into shared agent memory and the page refreshes.
   const ANTIGRAVITY_URL = ''; // e.g. 'http://localhost:4000/'
   const handleMvpAction = async (action: 'build' | 'fix') => {
+    if (action === 'build') {
+      try {
+        await fetch('/api/launch-startupforge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        console.error('Failed to launch StartupForge', err);
+      }
+      return;
+    }
+
     try {
       await fetch('/api/vault', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: 'mvp-' + Math.random().toString(36).substring(7),
-          keyType: action === 'build' ? 'mvp_build_request' : 'mvp_fix_request',
-          encryptedPayload: `${action === 'build' ? 'Build MVP' : 'Fix MVP'} requested from Code section`
+          keyType: 'mvp_fix_request',
+          encryptedPayload: `Fix MVP requested from Code section`
         })
       });
     } catch (err) {
@@ -1272,6 +1284,7 @@ export default function App() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg">
                   <button
+                    type="button"
                     onClick={() => handleMvpAction('build')}
                     className="flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold text-white bg-gradient-to-r from-[#a53600] to-[#cc490e] hover:from-[#812800] hover:to-[#a53600] rounded-xl transition shadow-xl shadow-[#a53600]/25 active:scale-95"
                   >
@@ -1279,6 +1292,7 @@ export default function App() {
                     <span>StartupForge</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleMvpAction('fix')}
                     className="flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold text-[#a53600] bg-white border-2 border-[#a53600]/30 hover:border-[#a53600] hover:bg-[#a53600]/5 rounded-xl transition active:scale-95"
                   >

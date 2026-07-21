@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as net from 'net';
-import { repairDefaultExports, ensureRouterContext } from './projectRepair';
+import { repairDefaultExports, repairNamedExports, ensureRouterContext, repairTailwindColors } from './projectRepair';
 
 const execAsync = promisify(exec);
 
@@ -165,6 +165,20 @@ export async function deployMVP(projectPath: string, socket: Socket): Promise<{
     }
   } catch { /* non-fatal */ }
 
+  // Fix named-import/default-export mismatches (the mirror image of the
+  // above — e.g. `import { Navbar } from './Navbar'` but Navbar.tsx only has
+  // `export default function Navbar()`), by re-exporting the default under
+  // the expected name.
+  try {
+    const fixedNamed = repairNamedExports(projectPath);
+    if (fixedNamed.length > 0) {
+      socket.emit('deploy:progress', {
+        step: 0,
+        message: `🔧 Auto-added missing named export(s) to: ${fixedNamed.join(', ')}`,
+      });
+    }
+  } catch { /* non-fatal */ }
+
   // Fix missing <Router> context — components that use useNavigate/<Link> but
   // no BrowserRouter/HashRouter is rendered ("useNavigate() may be used only in
   // the context of a <Router> component") — by wrapping <App /> in a HashRouter.
@@ -174,6 +188,19 @@ export async function deployMVP(projectPath: string, socket: Socket): Promise<{
       socket.emit('deploy:progress', {
         step: 0,
         message: `🔧 Wrapped app in <HashRouter> for react-router context: ${routerFixed.join(', ')}`,
+      });
+    }
+  } catch { /* non-fatal */ }
+
+  // Fix CSS @apply rules referencing undeclared custom Tailwind color shades
+  // (e.g. `@apply bg-brand-darkBg` when only `brand.dark` is defined) — a
+  // hard PostCSS build error, unlike unresolved classes used directly in JSX.
+  try {
+    const fixedColors = repairTailwindColors(projectPath);
+    if (fixedColors.length > 0) {
+      socket.emit('deploy:progress', {
+        step: 0,
+        message: `🔧 Added missing Tailwind color shade(s): ${fixedColors.join(', ')}`,
       });
     }
   } catch { /* non-fatal */ }
